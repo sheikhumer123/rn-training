@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import {
   StyleSheet,
   View,
-  Image,
   TextInput,
   Button,
   Text,
@@ -10,6 +9,8 @@ import {
 } from "react-native";
 import Facebook from "react-native-vector-icons/FontAwesome";
 import Feather from "react-native-vector-icons/Feather";
+
+import Logo from "../components/Logo";
 
 const SignIn = () => {
   const [user, setUser] = useState({
@@ -27,10 +28,7 @@ const SignIn = () => {
   return (
     <View style={styles.container}>
       <View style={styles.containerMid}>
-        <Image
-          source={require("../assets/images/logo.png")}
-          style={styles.logo}
-        />
+        <Logo />
         <TextInput
           style={styles.input}
           placeholder="Phone number, email, username"

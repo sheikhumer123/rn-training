@@ -1,5 +1,5 @@
 import React from "react";
-import SignIn from "./screens/SignIn";
+import Home from "./screens/Home";
 export default function App() {
-  return <SignIn />;
+  return <Home />;
 }
