@@ -145,14 +145,7 @@ const Signup = () => {
           </Text>
         </View>
       </View>
-      <View
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "center",
-          marginBottom: 20,
-        }}
-      >
+      <View style={styles.flex_setting}>
         <Text
           style={{
             textAlign: "center",
@@ -205,5 +198,10 @@ const styles = StyleSheet.create({
   },
   button: {
     minWidth: 120,
+  },
+  flex_setting: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
   },
 });

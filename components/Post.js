@@ -11,15 +11,9 @@ import { Icon } from "@rneui/base";
 
 const Post = () => {
   return (
-    <View style={styles.Post}>
+    <View style={styles.post}>
       <View style={styles.post_top}>
-        <View
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-          }}
-        >
+        <View style={styles.flex_setting}>
           <Avatar
             size={32}
             rounded
@@ -76,13 +70,7 @@ const Post = () => {
         >
           View all 103 comments
         </Text>
-        <View
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-          }}
-        >
+        <View style={styles.flex_setting}>
           <Avatar
             size={24}
             rounded
@@ -108,7 +96,7 @@ const Post = () => {
 export default Post;
 
 const styles = StyleSheet.create({
-  Post: {
+  post: {
     marginTop: 20,
   },
   post_top: {
@@ -150,5 +138,10 @@ const styles = StyleSheet.create({
     paddingLeft: 5,
     fontWeight: "500",
     marginTop: 3,
+  },
+  flex_setting: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
   },
 });
