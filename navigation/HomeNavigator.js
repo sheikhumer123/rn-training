@@ -10,7 +10,6 @@ import Notification from "../components/Notification";
 const Stack = createNativeStackNavigator();
 
 const HomeNavigator = (props) => {
-  const is_auth_user = true;
   return (
     <Stack.Navigator>
       {is_auth_user ? (

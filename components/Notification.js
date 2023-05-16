@@ -26,16 +26,10 @@ const Notification = (props) => {
               }}
             />
           </View>
-          <View
-            style={{
-              flex: 1,
-              justifyContent: "flex-start",
-              alignContent: "center",
-              paddingLeft: 5,
-            }}
-          >
+          <View style={styles.flex_setting}>
             <Text style={styles.notification_data}>
-              asdasdasdasdasasdasdasdasdasd asddasdasdas asdasdasdas
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla sit
+              amet semper felis, a sagittis turpis.
             </Text>
           </View>
           <View style={{ width: 70 }}>
@@ -61,7 +55,6 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
   },
-  notification_data: {},
 
   follow_button: {
     backgroundColor: "red",
@@ -81,5 +74,10 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     letterSpacing: 0.25,
     color: "white",
+  },
+  flex_setting: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
   },
 });
