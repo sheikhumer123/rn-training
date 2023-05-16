@@ -5,7 +5,7 @@ import { CheckBox } from "@rneui/themed";
 import { StyleSheet, View, TextInput, Button, Text } from "react-native";
 import Logo from "../components/Logo";
 
-const Signup = () => {
+const Signup = ({ navigation }) => {
   const [user, setUser] = useState({
     email: "",
     password: "",
@@ -168,7 +168,9 @@ const Signup = () => {
             marginLeft: 5,
             fontWeight: "bold",
           }}
-          onPress={() => {}}
+          onPress={() => {
+            navigation.navigate("SignIn");
+          }}
         >
           LogIn
         </Text>

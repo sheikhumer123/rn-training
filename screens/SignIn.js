@@ -12,7 +12,7 @@ import Feather from "react-native-vector-icons/Feather";
 
 import Logo from "../components/Logo";
 
-const SignIn = () => {
+const SignIn = ({ navigation }) => {
   const [user, setUser] = useState({
     email: "",
     password: "",
@@ -135,7 +135,7 @@ const SignIn = () => {
             fontWeight: "bold",
           }}
           onPress={() => {
-            // Linking.openURL("http://instagram.com");
+            navigation.navigate("SignUp");
           }}
         >
           SignUp
