@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Avatar } from "@rneui/themed";
 import {
   StyleSheet,
@@ -9,7 +9,11 @@ import {
 } from "react-native";
 import { Icon } from "@rneui/base";
 
-const Post = () => {
+import MainContext from "../MainContext/MainContext";
+
+const Post = ({ post }) => {
+  const { currentUser } = useContext(MainContext);
+
   return (
     <View style={styles.post}>
       <View style={styles.post_top}>
@@ -21,7 +25,7 @@ const Post = () => {
               uri: "https://randomuser.me/api/portraits/men/36.jpg",
             }}
           />
-          <Text style={styles.post_user_name}>umer.pk</Text>
+          <Text style={styles.post_user_name}>{currentUser.displayName}</Text>
         </View>
       </View>
       <View style={styles.post_data}>
@@ -58,7 +62,9 @@ const Post = () => {
         </Text>
         <Text style={{ fontWeight: "bold" }}>
           umer.pk{" "}
-          <Text style={{ fontWeight: "400", fontSize: 14 }}>Targer Locked</Text>
+          <Text style={{ fontWeight: "400", fontSize: 14 }}>
+            {post.description}
+          </Text>
         </Text>
         <Text
           style={{

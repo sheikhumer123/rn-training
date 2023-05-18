@@ -18,4 +18,5 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   sm: { width: 160 * 0.8, height: 50.5 * 0.8 },
+  lg: { width: 160 * 0.8, height: 50.5 * 0.8, marginBottom: 0 },
 });

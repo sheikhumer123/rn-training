@@ -1,11 +1,15 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { StyleSheet, View, ScrollView, SafeAreaView } from "react-native";
 
 import HomeTopNav from "../components/HomeTopNav";
 import Stories from "../components/Stories";
 import PostSection from "../components/PostSection";
+import { getPosts } from "../database";
 
 const Home = () => {
+  useEffect(() => {
+    getPosts();
+  }, []);
   return (
     <SafeAreaView>
       <ScrollView>
