@@ -1,8 +1,9 @@
 import React, { useState } from "react";
+import { CheckBox, Button } from "@rneui/themed";
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 
-import { CheckBox } from "@rneui/themed";
+import { StyleSheet, View, TextInput, Text } from "react-native";
 
-import { StyleSheet, View, TextInput, Button, Text } from "react-native";
 import Logo from "../components/Logo";
 
 const Signup = ({ navigation }) => {
@@ -23,6 +24,7 @@ const Signup = ({ navigation }) => {
       showPass: !user.showPass,
     });
   };
+  const [loading, setLoading] = useState(false);
   const toggleCheckbox = () => {
     setUser({
       ...user,
@@ -31,11 +33,16 @@ const Signup = ({ navigation }) => {
   };
 
   const signUp = () => {
-    if ((user.email == "") | (user.password == "") | (user.phoneNumber == "")) {
-      alert("Fill all Fields");
-    } else {
-      alert("Successfully Signed Up");
-    }
+    setLoading(true);
+    const auth = getAuth();
+    createUserWithEmailAndPassword(auth, user.email, user.password)
+      .then((userCredential) => {
+        console.log(userCredential.user);
+      })
+      .catch((error) => {})
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   return (
@@ -131,8 +138,13 @@ const Signup = ({ navigation }) => {
             justifyContent: "center",
             marginTop: 10,
           }}
+        ></View>
+        <View
+          style={{
+            width: "100%",
+          }}
         >
-          <Button title="Sign Up" color={"dodgerblue"} onPress={signUp} />
+          <Button title="Sign Up" onPress={signUp} loading={loading} />
         </View>
         <View>
           <Text
@@ -205,5 +217,7 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 10,
   },
 });

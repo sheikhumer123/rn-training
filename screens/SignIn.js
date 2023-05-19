@@ -1,18 +1,20 @@
 import React, { useState } from "react";
+import { Button } from "@rneui/themed";
 import {
   StyleSheet,
   View,
   TextInput,
-  Button,
   Text,
   TouchableWithoutFeedback,
 } from "react-native";
 import Facebook from "react-native-vector-icons/FontAwesome";
 import Feather from "react-native-vector-icons/Feather";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 
 import Logo from "../components/Logo";
 
 const SignIn = ({ navigation }) => {
+  const [loading, setloading] = useState(false);
   const [user, setUser] = useState({
     email: "",
     password: "",
@@ -24,6 +26,20 @@ const SignIn = ({ navigation }) => {
       ...user,
       showPassword: !user.showPassword,
     });
+  };
+
+  const signin = () => {
+    setloading(true);
+    const auth = getAuth();
+    signInWithEmailAndPassword(auth, user.email, user.password)
+      .then((userCredential) => {
+        const user = userCredential.user;
+        alert("signed in");
+      })
+      .catch((error) => {})
+      .finally(() => {
+        setloading(false);
+      });
   };
   return (
     <View style={styles.container}>
@@ -87,7 +103,7 @@ const SignIn = ({ navigation }) => {
             justifyContent: "center",
           }}
         >
-          <Button title="Log In" color={"dodgerblue"} onPress={() => alert()} />
+          <Button title="Log In" onPress={signin} loading={loading} />
         </View>
         <View>
           <Text
