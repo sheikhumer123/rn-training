@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import {
   StyleSheet,
   View,
@@ -12,14 +12,13 @@ import Logo from "./Logo";
 
 const HomeTopNav = () => {
   const navigation = useNavigation();
+
   return (
     <View style={styles.outer_container}>
       <Logo sm />
       <View style={styles.home_nav}>
         <TouchableWithoutFeedback
-          onPress={() => {
-            navigation.navigate("Notification");
-          }}
+          onPress={() => navigation.navigate("Notification")}
         >
           <Icon
             style={styles.top_icons}

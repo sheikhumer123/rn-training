@@ -32,10 +32,7 @@ const SignIn = ({ navigation }) => {
     setloading(true);
     const auth = getAuth();
     signInWithEmailAndPassword(auth, user.email, user.password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        alert("signed in");
-      })
+      .then((userCredential) => {})
       .catch((error) => {})
       .finally(() => {
         setloading(false);
