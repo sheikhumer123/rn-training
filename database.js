@@ -11,11 +11,6 @@ import {
 const app = getApp();
 const db = getFirestore(app);
 
-export const getPosts = async () => {
-  const docRef = doc(db, "posts", "post");
-  const docSnap = await getDoc(docRef);
-};
-
 export const createPostDB = async (postModel) => {
   // Create post DB
   try {

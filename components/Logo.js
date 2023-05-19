@@ -17,6 +17,6 @@ const styles = StyleSheet.create({
     height: 71.1,
     marginBottom: 20,
   },
-  sm: { width: 160 * 0.8, height: 50.5 * 0.8 },
-  lg: { width: 160 * 0.8, height: 50.5 * 0.8, marginBottom: 0 },
+  sm: { width: 128, height: 40.4 },
+  lg: { width: 128, height: 40.4, marginBottom: 0 },
 });

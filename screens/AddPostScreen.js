@@ -8,7 +8,7 @@ import MainContext from "../MainContext/MainContext";
 const AddPostScreen = () => {
   const { currentUser } = useContext(MainContext);
   const [postModel, setPostModel] = useState({
-    img: "https://thumbs.dreamstime.com/b/beautiful-rain-forest-ang-ka-nature-trail-36703721.jpg",
+    img: "",
     comments: "",
     description: "",
     likes: "",

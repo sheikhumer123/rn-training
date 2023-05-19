@@ -4,7 +4,7 @@ import "../initFirebase";
 
 const MainContext = React.createContext();
 export const MainProvider = ({ children }) => {
-  const [appload, setappload] = useState(true);
+  const [appLoad, setAppLoad] = useState(true);
   const [currentUser, setCurrentUser] = useState({});
   useEffect(() => {
     const auth = getAuth();
@@ -12,13 +12,13 @@ export const MainProvider = ({ children }) => {
       if (user) {
         setCurrentUser(user);
       }
-      setappload(false);
+      setAppLoad(false);
     });
     return () => unsubscriber();
   }, []);
 
   return (
-    <MainContext.Provider value={{ currentUser, setCurrentUser, appload }}>
+    <MainContext.Provider value={{ currentUser, setCurrentUser, appLoad }}>
       {children}
     </MainContext.Provider>
   );
