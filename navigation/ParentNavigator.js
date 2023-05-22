@@ -1,10 +1,11 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 
 import MainNavigator from "./MainNavigator";
 import AuthNavigator from "./AuthNavigator";
 import MainContext from "../MainContext/MainContext";
 import AppLoader from "../components/AppLoader";
+import FirstTimeNavigator from "./FirstTimeNavigator";
 
 export default function ParentNavigator() {
   const { currentUser, appLoad } = useContext(MainContext);
@@ -12,9 +13,13 @@ export default function ParentNavigator() {
   return (
     <NavigationContainer>
       {appLoad ? (
-        <AppLoader></AppLoader>
+        <AppLoader />
       ) : currentUser?.uid ? (
-        <MainNavigator />
+        currentUser?.username ? (
+          <MainNavigator />
+        ) : (
+          <FirstTimeNavigator />
+        )
       ) : (
         <AuthNavigator />
       )}
