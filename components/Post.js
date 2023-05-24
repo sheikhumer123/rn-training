@@ -8,7 +8,7 @@ import {
   TextInput,
 } from "react-native";
 import { Icon } from "@rneui/base";
-// import CommentBox from "./CommentBox";
+import CommentBox from "./CommentBox";
 
 import MainContext from "../MainContext/MainContext";
 
@@ -18,6 +18,8 @@ const Post = ({ post }) => {
   return (
     <View style={styles.post}>
       <View style={styles.post_top}>
+        {/* <Text>{post.post_id}</Text> */}
+
         <View style={styles.flex_setting}>
           <Avatar
             size={32}
@@ -67,7 +69,7 @@ const Post = ({ post }) => {
             {post.description}
           </Text>
         </View>
-        {/* <CommentBox /> */}
+        <CommentBox postID={post.post_id} />
         <Text
           style={{
             color: "grey",

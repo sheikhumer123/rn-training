@@ -8,7 +8,9 @@ import { AppContext } from "../navigation/PostNavigator";
 
 const PostSection = () => {
   const [load, setLoad] = useState(true);
+
   const [posts, setPosts] = useState([]);
+
   const { refreshPosts } = useContext(AppContext);
 
   useEffect(() => {
@@ -18,6 +20,7 @@ const PostSection = () => {
   const loadPosts = async () => {
     setLoad(true);
     const data = await getAllPosts();
+
     const reversedPosts = [...data].reverse();
     setPosts(reversedPosts);
     setLoad(false);

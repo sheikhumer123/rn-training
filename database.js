@@ -14,6 +14,10 @@ import {
   getDoc,
   setDoc,
   doc,
+  query,
+  where,
+  updateDoc,
+  arrayUnion,
 } from "firebase/firestore";
 
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
@@ -120,4 +124,39 @@ export const updateUserPass = async (pass, currentPass) => {
   } catch (error) {
     console.log(error);
   }
+};
+
+export const Comment = async ({ postID, comment }) => {
+  const q = query(collection(db, "posts"), where("post_id", "==", postID));
+  const querySnapshot = await getDocs(q);
+
+  querySnapshot.forEach(async (doc) => {
+    const postId = doc.id;
+    const comments = doc.data().comments || []; // Get the existing comments or initialize an empty array
+
+    const newComment = comment; // Example comment object, replace with your own logic
+
+    comments.push(newComment); // Push the new comment into the comments array
+
+    try {
+      await updateDoc(doc.ref, {
+        comments: arrayUnion(newComment),
+      }); // Update the comments field in Firestore
+      console.log("Comment added successfully!");
+    } catch (error) {
+      console.error("Error adding comment:", error);
+    }
+  });
+};
+
+export const getComments = async ({ postID }) => {
+  const q = query(collection(db, "posts"), where("post_id", "==", postID));
+  const querySnapshot = await getDocs(q);
+
+  const comments = querySnapshot.docs.flatMap((doc) => {
+    const postComments = doc.data().comments || [];
+    return postComments;
+  });
+
+  return comments;
 };
