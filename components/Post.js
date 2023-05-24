@@ -8,6 +8,7 @@ import {
   TextInput,
 } from "react-native";
 import { Icon } from "@rneui/base";
+// import CommentBox from "./CommentBox";
 
 import MainContext from "../MainContext/MainContext";
 
@@ -22,16 +23,16 @@ const Post = ({ post }) => {
             size={32}
             rounded
             source={{
-              uri: "https://randomuser.me/api/portraits/men/36.jpg",
+              uri: currentUser.userImg,
             }}
           />
-          <Text style={styles.post_user_name}>{currentUser.displayName}</Text>
+          <Text style={styles.post_user_name}>{post.user_name}</Text>
         </View>
       </View>
       <View style={styles.post_data}>
         <ImageBackground
           source={{
-            uri: "https://thumbs.dreamstime.com/b/beautiful-rain-forest-ang-ka-nature-trail-36703721.jpg",
+            uri: post.img,
           }}
           style={{
             width: "100%",
@@ -58,14 +59,15 @@ const Post = ({ post }) => {
       </View>
       <View style={styles.like_comment_section}>
         <Text style={{ marginTop: 5, fontWeight: "bold", fontSize: 14 }}>
-          9,109 likes
+          {post.likes}
         </Text>
-        <Text style={{ fontWeight: "bold" }}>
-          umer.pk{" "}
-          <Text style={{ fontWeight: "400", fontSize: 14 }}>
+        <View style={{ flex: 1, flexDirection: "row", alignContent: "center" }}>
+          <Text style={{ fontWeight: "bold" }}>{post.user_name}</Text>
+          <Text style={{ fontWeight: "400", fontSize: 14, paddingLeft: 5 }}>
             {post.description}
           </Text>
-        </Text>
+        </View>
+        {/* <CommentBox /> */}
         <Text
           style={{
             color: "grey",
@@ -84,7 +86,6 @@ const Post = ({ post }) => {
               uri: "https://randomuser.me/api/portraits/men/36.jpg",
             }}
           />
-          <TextInput placeholder="Add a comment" style={styles.comment_box} />
         </View>
         <Text
           style={{

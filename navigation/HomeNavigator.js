@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import Home from "../screens/Home";
 import Notification from "../components/Notification";
+import PrivacyAndSettings from "../components/PrivacyAndSettings";
 
 const Stack = createNativeStackNavigator();
 
@@ -20,6 +21,16 @@ const HomeNavigator = (props) => {
       <Stack.Screen
         name="Notification"
         component={Notification}
+        options={{
+          headerTitleStyle: {
+            color: "red",
+            fontSize: 22,
+          },
+        }}
+      />
+      <Stack.Screen
+        name="PrivacyAndSettings"
+        component={PrivacyAndSettings}
         options={{
           headerTitleStyle: {
             color: "red",
