@@ -1,7 +1,6 @@
 import React, { useState, useContext } from "react";
 import {
   View,
-  Text,
   Image,
   StyleSheet,
   TextInput,
@@ -46,7 +45,7 @@ const UserDetails = () => {
       userImg: downloadUrl,
       id: currentUser.uid,
     };
-    await createUserDB(userDetails, currentUser);
+    await createUserDB(userDetails, currentUser.uid);
     setCurrentUser({
       ...currentUser,
       username: userName,
@@ -56,42 +55,51 @@ const UserDetails = () => {
   };
 
   return (
-    <View style={styles.main_container}>
-      <Logo lg />
-      <TouchableWithoutFeedback onPress={pickImage}>
+    <>
+      <View style={styles.main_container}>
+        <Logo lg />
         <View style={styles.set_dp}>
-          <ImageBackground
-            source={
-              image ? { uri: image } : require("../assets/images/add-img.png")
-            }
-            resizeMode="cover"
-            style={{
-              flex: 1,
-              justifyContent: "center",
-              width: "100%",
-              height: "100%",
-            }}
-          />
-
-          <Image
-            style={{
-              width: 40,
-              height: 40,
-              position: "absolute",
-              bottom: -10,
-              right: -10,
-            }}
-            source={require("../assets/images/camera-icon.png")}
-          />
+          <TouchableWithoutFeedback onPress={pickImage}>
+            <View style={styles.dp_box}>
+              <ImageBackground
+                source={
+                  image
+                    ? { uri: image }
+                    : require("../assets/images/add-img.png")
+                }
+                resizeMode="cover"
+                style={styles.img_back}
+              />
+              <Image
+                style={styles.camera_icon}
+                source={require("../assets/images/camera-icon.png")}
+              />
+            </View>
+          </TouchableWithoutFeedback>
         </View>
-      </TouchableWithoutFeedback>
-      <TextInput
-        style={styles.username_input}
-        onChangeText={(text) => setUserName(text)}
-        value={userName}
-      />
-      <Button title={"Continue"} onPress={uploadUserDetail} loading={loading} />
-    </View>
+        <Image
+          style={{
+            width: 40,
+            height: 40,
+            position: "absolute",
+            bottom: -10,
+            right: -10,
+          }}
+          source={require("../assets/images/camera-icon.png")}
+        />
+
+        <TextInput
+          style={styles.username_input}
+          onChangeText={(text) => setUserName(text)}
+          value={userName}
+        />
+        <Button
+          title={"Continue"}
+          onPress={uploadUserDetail}
+          loading={loading}
+        />
+      </View>
+    </>
   );
 };
 export default UserDetails;
@@ -122,5 +130,23 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     borderRadius: 5,
     marginBottom: 10,
+  },
+  dp_box: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  img_back: {
+    width: 110,
+    height: 110,
+    overflow: "hidden",
+    borderRadius: 50,
+  },
+  camera_icon: {
+    width: 40,
+    height: 40,
+    position: "absolute",
+    bottom: -20,
+    right: -15,
   },
 });
