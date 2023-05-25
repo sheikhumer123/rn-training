@@ -55,7 +55,7 @@ export const picUriDatabase = async (uri) => {
 
 export const createUserDB = async (userDetails, uid) => {
   try {
-    await setDoc(doc(db, "users", currentUser.uid), uid);
+    await setDoc(doc(db, "users", uid), userDetails);
   } catch (error) {
     console.log(error);
   }

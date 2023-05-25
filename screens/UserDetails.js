@@ -46,9 +46,7 @@ const UserDetails = () => {
       userImg: downloadUrl,
       id: currentUser.uid,
     };
-    const uid = currentUser.uid;
-
-    await createUserDB(userDetails, uid);
+    await createUserDB(userDetails, currentUser.uid);
     setCurrentUser({
       ...currentUser,
       username: userName,
