@@ -60,7 +60,7 @@ const AddPostScreen = () => {
       img: downloadUrl,
       comments: [],
       description: addDesc,
-      likes: 0,
+      likes: [],
       upload_time: new Date(),
       user_name: userDisplayName,
       id: currentUser.uid,

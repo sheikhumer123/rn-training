@@ -32,7 +32,6 @@ const db = getFirestore(app);
 
 export const addUserDetails = async (currentUser) => {
   try {
-    console.log(currentUser);
     await setDoc(doc(db, "users", currentUser.uuid), {});
   } catch (error) {
     console.log(error);
@@ -56,7 +55,6 @@ export const createUserDB = async (userDetails, currentUser) => {
   try {
     // create user with id: userDetails.id
     await setDoc(doc(db, "users", currentUser.uid), userDetails);
-    console.log(userDetails);
   } catch (error) {
     console.log(error);
   }
@@ -70,7 +68,6 @@ export const getUserDB = async (uid) => {
     const data = docSnap.data();
     return data;
   } else {
-    console.log("No such document!");
   }
 };
 
@@ -87,11 +84,9 @@ export const postPicUplad = async (uri) => {
   return await getDownloadURL(imageRef);
 };
 
-export const createPostDb = async (postDetail, currentUser) => {
-  console.log(postDetail);
+export const createPostDb = async (postDetail) => {
   try {
     const docRef = await addDoc(collection(db, "posts"), postDetail);
-    console.log(docRef.id);
   } catch (error) {
     console.log(error);
   }
@@ -119,8 +114,6 @@ export const updateUserPass = async (pass, currentPass) => {
     await reauthenticateWithCredential(user, credential);
 
     await updatePassword(user, newPassword);
-
-    console.log("Password updated successfully.");
   } catch (error) {
     console.log(error);
   }
@@ -142,7 +135,6 @@ export const Comment = async ({ postID, comment }) => {
       await updateDoc(doc.ref, {
         comments: arrayUnion(newComment),
       }); // Update the comments field in Firestore
-      console.log("Comment added successfully!");
     } catch (error) {
       console.error("Error adding comment:", error);
     }
@@ -159,4 +151,37 @@ export const getComments = async ({ postID }) => {
   });
 
   return comments;
+};
+
+export const Like = async ({ currentUser, like, post }) => {
+  const q = query(
+    collection(db, "posts"),
+    where("post_id", "==", post.post_id)
+  );
+  const querySnapshot = await getDocs(q);
+
+  const updatePromises = []; // Array to store update promises
+  let likesLength = 0; // Variable to store the length of the likes array
+
+  querySnapshot.forEach(async (doc) => {
+    const likes = doc.data().likes || []; // Get the existing likes or initialize an empty array
+    const existingLikeIndex = likes.findIndex(
+      (l) => l.user_id === currentUser.uid
+    ); // Find the index of the existing like with the same user_id
+    if (existingLikeIndex !== -1) {
+      likes.splice(existingLikeIndex, 1); // Remove the existing like with the same user_id
+    } else {
+      likes.push(like); // Add the new like to the likes array
+    }
+
+    const updatePromise = updateDoc(doc.ref, { likes: likes });
+    updatePromises.push(updatePromise); // Add the update promise to the array
+
+    likesLength = likes.length; // Update the likesLength variable with the updated likes array length
+  });
+
+  // Wait for all update promises to complete before returning likesLength
+  await Promise.all(updatePromises);
+
+  return likesLength; // Return the length of the likes array
 };

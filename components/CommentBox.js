@@ -14,7 +14,7 @@ import "react-native-get-random-values";
 
 import { v4 as uuidv4 } from "uuid";
 
-const CommentBox = ({ postID }) => {
+const CommentBox = ({ postID, commentInputRef }) => {
   const { currentUser } = useContext(MainContext);
   const [comments, setComments] = useState([]);
   const [comment, setComment] = useState({
@@ -28,6 +28,7 @@ const CommentBox = ({ postID }) => {
     if (comment.comment.trim() !== "") {
       await Comment({ postID, comment });
       const updatedComments = await getComments({ postID }); // Fetch the updated comments
+
       setComments(updatedComments); // Update the comments state with the updated comments
     } else {
       alert("lekh ty ly ");
@@ -56,6 +57,7 @@ const CommentBox = ({ postID }) => {
           style={styles.comment_box}
           value={comment.comment}
           onChangeText={(txt) => setComment({ ...comment, comment: txt })}
+          ref={commentInputRef}
         />
         <TouchableOpacity
           onPress={addComment}

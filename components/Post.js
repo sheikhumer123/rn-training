@@ -1,25 +1,33 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState, useRef } from "react";
 import { Avatar } from "@rneui/themed";
-import {
-  StyleSheet,
-  View,
-  Text,
-  ImageBackground,
-  TextInput,
-} from "react-native";
+import { StyleSheet, View, Text, ImageBackground } from "react-native";
 import { Icon } from "@rneui/base";
 import CommentBox from "./CommentBox";
 
 import MainContext from "../MainContext/MainContext";
+import { Like } from "../database";
 
 const Post = ({ post }) => {
+  const commentInputRef = useRef(null);
   const { currentUser } = useContext(MainContext);
+  const [like, setLike] = useState({
+    user_id: currentUser.uid,
+    likedby: currentUser.username,
+  });
+  const [likeLength, setLikeLength] = useState("0");
+
+  const likePost = async () => {
+    const LikesLength = await Like({ currentUser, like, post });
+    setLikeLength(LikesLength);
+  };
+
+  const handleClick = () => {
+    commentInputRef.current.focus();
+  };
 
   return (
     <View style={styles.post}>
       <View style={styles.post_top}>
-        {/* <Text>{post.post_id}</Text> */}
-
         <View style={styles.flex_setting}>
           <Avatar
             size={32}
@@ -45,11 +53,17 @@ const Post = ({ post }) => {
       </View>
       <View style={styles.post_bottom}>
         <View style={{ display: "flex", flexDirection: "row" }}>
-          <Icon style={styles.post_icons} name="heart" type="feather" />
+          <Icon
+            style={styles.post_icons}
+            name="heart"
+            type="feather"
+            onPress={likePost}
+          />
           <Icon
             style={styles.post_icons}
             name="message-circle"
             type="feather"
+            onPress={handleClick}
           />
           <Icon
             style={styles.post_icons}
@@ -61,7 +75,7 @@ const Post = ({ post }) => {
       </View>
       <View style={styles.like_comment_section}>
         <Text style={{ marginTop: 5, fontWeight: "bold", fontSize: 14 }}>
-          {post.likes}
+          {likeLength} likes
         </Text>
         <View style={{ flex: 1, flexDirection: "row", alignContent: "center" }}>
           <Text style={{ fontWeight: "bold" }}>{post.user_name}</Text>
@@ -69,7 +83,9 @@ const Post = ({ post }) => {
             {post.description}
           </Text>
         </View>
-        <CommentBox postID={post.post_id} />
+
+        <CommentBox postID={post.post_id} commentInputRef={commentInputRef} />
+
         <Text
           style={{
             color: "grey",
