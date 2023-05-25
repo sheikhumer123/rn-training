@@ -8,11 +8,8 @@ import {
   setDoc,
   doc,
 } from "firebase/firestore";
-
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-
 import "react-native-get-random-values";
-
 import { v4 as uuidv4 } from "uuid";
 
 const app = getApp();
@@ -40,7 +37,6 @@ export const getAllPosts = async () => {
 
 export const addUserDetails = async (currentUser) => {
   try {
-    console.log(currentUser);
     await setDoc(doc(db, "users", currentUser.uuid), {});
   } catch (error) {
     console.log(error);
@@ -51,20 +47,15 @@ export const picUriDatabase = async (uri) => {
   const name = uuidv4();
   const filename = `${name}.jpg`;
   const imageRef = ref(storage, `user_images/${filename}`);
-
   const response = await fetch(uri);
   const blob = await response.blob();
-
   await uploadBytes(imageRef, blob);
-
   return await getDownloadURL(imageRef);
 };
 
-export const createUserDB = async (userDetails, currentUser) => {
+export const createUserDB = async (userDetails, uid) => {
   try {
-    // create user with id: userDetails.id
-    await setDoc(doc(db, "users", currentUser.uid), userDetails);
-    console.log(userDetails);
+    await setDoc(doc(db, "users", currentUser.uid), uid);
   } catch (error) {
     console.log(error);
   }
@@ -78,6 +69,5 @@ export const getUserDB = async (uid) => {
     const data = docSnap.data();
     return data;
   } else {
-    console.log("No such document!");
   }
 };

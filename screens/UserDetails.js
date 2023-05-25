@@ -46,7 +46,9 @@ const UserDetails = () => {
       userImg: downloadUrl,
       id: currentUser.uid,
     };
-    await createUserDB(userDetails, currentUser);
+    const uid = currentUser.uid;
+
+    await createUserDB(userDetails, uid);
     setCurrentUser({
       ...currentUser,
       username: userName,
@@ -60,29 +62,16 @@ const UserDetails = () => {
       <Logo lg />
       <View style={styles.set_dp}>
         <TouchableWithoutFeedback onPress={pickImage}>
-          <View
-            style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
-          >
+          <View style={styles.dp_box}>
             <ImageBackground
               source={
                 image ? { uri: image } : require("../assets/images/add-img.png")
               }
               resizeMode="cover"
-              style={{
-                width: 110,
-                height: 110,
-                overflow: "hidden",
-                borderRadius: 50,
-              }}
+              style={styles.img_back}
             />
             <Image
-              style={{
-                width: 40,
-                height: 40,
-                position: "absolute",
-                bottom: -20,
-                right: -15,
-              }}
+              style={styles.camera_icon}
               source={require("../assets/images/camera-icon.png")}
             />
           </View>
@@ -130,5 +119,23 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     borderRadius: 5,
     marginBottom: 10,
+  },
+  dp_box: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  img_back: {
+    width: 110,
+    height: 110,
+    overflow: "hidden",
+    borderRadius: 50,
+  },
+  camera_icon: {
+    width: 40,
+    height: 40,
+    position: "absolute",
+    bottom: -20,
+    right: -15,
   },
 });
