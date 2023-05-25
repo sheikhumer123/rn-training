@@ -87,7 +87,6 @@ const UserDetails = () => {
           }}
           source={require("../assets/images/camera-icon.png")}
         />
-
         <TextInput
           style={styles.username_input}
           onChangeText={(text) => setUserName(text)}
