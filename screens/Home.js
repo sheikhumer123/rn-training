@@ -8,7 +8,7 @@ import PostSection from "../components/PostSection";
 const Home = () => {
   return (
     <SafeAreaView>
-      <ScrollView>
+      <ScrollView keyboardShouldPersistTaps="always">
         <HomeTopNav />
         <Stories />
         <View

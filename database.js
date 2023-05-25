@@ -5,7 +5,6 @@ import {
   updatePassword,
   EmailAuthProvider,
 } from "firebase/auth";
-
 import {
   getFirestore,
   addDoc,
@@ -53,7 +52,6 @@ export const picUriDatabase = async (uri) => {
 
 export const createUserDB = async (userDetails, currentUser) => {
   try {
-    // create user with id: userDetails.id
     await setDoc(doc(db, "users", currentUser.uid), userDetails);
   } catch (error) {
     console.log(error);
@@ -75,12 +73,9 @@ export const postPicUplad = async (uri) => {
   const name = uuidv4();
   const filename = `${name}.jpg`;
   const imageRef = ref(storage, `post_images/${filename}`);
-
   const response = await fetch(uri);
   const blob = await response.blob();
-
   await uploadBytes(imageRef, blob);
-
   return await getDownloadURL(imageRef);
 };
 
@@ -103,16 +98,11 @@ export const getAllPosts = async () => {
 
 export const updateUserPass = async (pass, currentPass) => {
   const auth = getAuth();
-
   const user = auth.currentUser;
-
   const newPassword = pass;
-
   const credential = EmailAuthProvider.credential(user.email, currentPass);
-
   try {
     await reauthenticateWithCredential(user, credential);
-
     await updatePassword(user, newPassword);
   } catch (error) {
     console.log(error);
@@ -122,15 +112,11 @@ export const updateUserPass = async (pass, currentPass) => {
 export const Comment = async ({ postID, comment }) => {
   const q = query(collection(db, "posts"), where("post_id", "==", postID));
   const querySnapshot = await getDocs(q);
-
   querySnapshot.forEach(async (doc) => {
     const postId = doc.id;
     const comments = doc.data().comments || []; // Get the existing comments or initialize an empty array
-
     const newComment = comment; // Example comment object, replace with your own logic
-
     comments.push(newComment); // Push the new comment into the comments array
-
     try {
       await updateDoc(doc.ref, {
         comments: arrayUnion(newComment),
@@ -144,12 +130,10 @@ export const Comment = async ({ postID, comment }) => {
 export const getComments = async ({ postID }) => {
   const q = query(collection(db, "posts"), where("post_id", "==", postID));
   const querySnapshot = await getDocs(q);
-
   const comments = querySnapshot.docs.flatMap((doc) => {
     const postComments = doc.data().comments || [];
     return postComments;
   });
-
   return comments;
 };
 
@@ -159,11 +143,9 @@ export const Like = async ({ currentUser, like, post }) => {
     where("post_id", "==", post.post_id)
   );
   const querySnapshot = await getDocs(q);
-
   const updatePromises = []; // Array to store update promises
-  let likesLength = 0; // Variable to store the length of the likes array
 
-  querySnapshot.forEach(async (doc) => {
+  for (const doc of querySnapshot.docs) {
     const likes = doc.data().likes || []; // Get the existing likes or initialize an empty array
     const existingLikeIndex = likes.findIndex(
       (l) => l.user_id === currentUser.uid
@@ -173,15 +155,24 @@ export const Like = async ({ currentUser, like, post }) => {
     } else {
       likes.push(like); // Add the new like to the likes array
     }
-
     const updatePromise = updateDoc(doc.ref, { likes: likes });
     updatePromises.push(updatePromise); // Add the update promise to the array
+  }
+  // Wait for all update promises to complete
+  await Promise.all(updatePromises);
+};
 
-    likesLength = likes.length; // Update the likesLength variable with the updated likes array length
+export const getLikesLength = async ({ post }) => {
+  const q = query(
+    collection(db, "posts"),
+    where("post_id", "==", post.post_id)
+  );
+  const querySnapshot = await getDocs(q);
+  let likesLength = 0;
+  querySnapshot.forEach((doc) => {
+    const likes = doc.data().likes || []; // Get the existing likes or initialize an empty array
+    likesLength = likes.length; // Get the length of the likes array
   });
 
-  // Wait for all update promises to complete before returning likesLength
-  await Promise.all(updatePromises);
-
-  return likesLength; // Return the length of the likes array
+  return likesLength;
 };

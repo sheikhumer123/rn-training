@@ -5,6 +5,7 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
+  Keyboard,
 } from "react-native";
 import Feather from "react-native-vector-icons/Feather";
 import MainContext from "../MainContext/MainContext";
@@ -16,12 +17,13 @@ import { v4 as uuidv4 } from "uuid";
 
 const CommentBox = ({ postID, commentInputRef }) => {
   const { currentUser } = useContext(MainContext);
+  const key_id = uuidv4();
   const [comments, setComments] = useState([]);
   const [comment, setComment] = useState({
     add_by: currentUser.username,
     comment: "",
     upload_time: new Date(),
-    id: uuidv4(),
+    id: key_id,
   });
 
   const addComment = async () => {
@@ -33,11 +35,10 @@ const CommentBox = ({ postID, commentInputRef }) => {
     } else {
       alert("lekh ty ly ");
     }
-
-    console.log(comment);
     setComment({
       comment: "",
     });
+    Keyboard.dismiss();
   };
 
   useEffect(() => {
