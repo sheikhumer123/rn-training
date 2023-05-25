@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import "../initFirebase";
+import { getUserDB } from "../database";
 
 const MainContext = React.createContext();
 export const MainProvider = ({ children }) => {
@@ -8,9 +9,13 @@ export const MainProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState({});
   useEffect(() => {
     const auth = getAuth();
-    const unsubscriber = onAuthStateChanged(auth, (user) => {
+    const unsubscriber = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        setCurrentUser(user);
+        // Firestore call to get user from uid and set username and userIm from that input
+        let data = (await getUserDB(user.uid)) || {};
+
+        const { email, uid } = user;
+        setCurrentUser({ email, uid, ...data });
       }
       setAppLoad(false);
     });
