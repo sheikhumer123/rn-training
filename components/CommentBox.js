@@ -75,9 +75,16 @@ const CommentBox = ({ postID, commentInputRef }) => {
         </TouchableOpacity>
       </View>
 
-      <View>
+      <View style={styles.comment_area}>
         {comments.map((comment) => (
-          <Text key={comment.id}>{comment.comment}</Text>
+          <View style={styles.setting}>
+            <Text style={{ fontWeight: "bold" }} key={comment.username}>
+              {comment.add_by}
+            </Text>
+            <Text style={{ marginLeft: 5 }} key={comment.id}>
+              {comment.comment}
+            </Text>
+          </View>
         ))}
       </View>
     </View>
@@ -97,5 +104,12 @@ const styles = StyleSheet.create({
     position: "absolute",
     right: 10,
     bottom: 6,
+  },
+  comment_area: {
+    overflow: "hidden",
+  },
+  setting: {
+    display: "flex",
+    flexDirection: "row",
   },
 });

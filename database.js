@@ -7,7 +7,6 @@ import {
 } from "firebase/auth";
 import {
   getFirestore,
-  addDoc,
   collection,
   getDocs,
   getDoc,
@@ -167,4 +166,25 @@ export const getLikesLength = async (postId) => {
     return likesLength;
   } else {
   }
+};
+
+export const getUserPosts = async (userID) => {
+  const posts = [];
+
+  const q = query(collection(db, "posts"), where("id", "==", userID));
+  const querySnapshot = await getDocs(q);
+  querySnapshot.forEach((doc) => {
+    posts.push(doc.data());
+  });
+  return posts;
+};
+
+export const getAllUsers = async () => {
+  const User = [];
+  const querySnapshot = await getDocs(collection(db, "users"));
+  querySnapshot.forEach((doc) => {
+    // doc.data() is never undefined for query doc snapshots
+    User.push(doc.data());
+  });
+  return User;
 };

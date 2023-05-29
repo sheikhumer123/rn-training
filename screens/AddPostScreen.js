@@ -65,6 +65,7 @@ const AddPostScreen = () => {
       user_name: userDisplayName,
       id: currentUser.uid,
       post_id: uuidv4(),
+      post_user_img: currentUser.user_img,
     };
     await createPostDb(postDetail, currentUser);
     setImage("");
