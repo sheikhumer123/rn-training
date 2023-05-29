@@ -4,5 +4,8 @@ export const app = {
       justifyContent: "center",
       alignItems: "center",
     },
+    center_text: {
+      textAlign: "center",
+    },
   },
 };

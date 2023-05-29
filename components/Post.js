@@ -1,19 +1,51 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState, useRef, useEffect } from "react";
 import { Avatar } from "@rneui/themed";
 import {
   StyleSheet,
   View,
   Text,
   ImageBackground,
-  TextInput,
+  TouchableWithoutFeedback,
 } from "react-native";
 import { Icon } from "@rneui/base";
+import CommentBox from "./CommentBox";
+import moment from "moment";
 
 import MainContext from "../MainContext/MainContext";
-import { app } from "../constants";
+import { likeFunction, getLikesLength } from "../database";
 
 const Post = ({ post }) => {
+  const commentInputRef = useRef(null);
+  const uploadTime = post.upload_time;
+
+  const timestamp = moment
+    .unix(uploadTime.seconds)
+    .milliseconds(uploadTime.nanoseconds / 1000000);
+  const formattedTime = moment(timestamp).startOf("day").fromNow();
+
   const { currentUser } = useContext(MainContext);
+  const [like, setLike] = useState({
+    user_id: currentUser.uid,
+    liked_by: currentUser.username,
+  });
+  const [likeLength, setLikeLength] = useState("");
+
+  const likePost = async () => {
+    await likeFunction({ currentUser, like, post });
+    const likesLength = await getLikesLength(post.post_id);
+    setLikeLength(likesLength);
+  };
+
+  useEffect(() => {
+    const fetchLikesLength = async () => {
+      const length = await getLikesLength(post.post_id);
+      setLikeLength(length);
+    };
+    fetchLikesLength();
+  }, []);
+  const handleClick = () => {
+    commentInputRef.current.focus();
+  };
 
   return (
     <View style={styles.post}>
@@ -43,12 +75,16 @@ const Post = ({ post }) => {
       </View>
       <View style={styles.post_bottom}>
         <View style={{ display: "flex", flexDirection: "row" }}>
-          <Icon style={styles.post_icons} name="heart" type="feather" />
-          <Icon
-            style={styles.post_icons}
-            name="message-circle"
-            type="feather"
-          />
+          <TouchableWithoutFeedback onPress={likePost}>
+            <Icon style={styles.post_icons} name="heart" type="feather" />
+          </TouchableWithoutFeedback>
+          <TouchableWithoutFeedback onPress={handleClick}>
+            <Icon
+              style={styles.post_icons}
+              name="message-circle"
+              type="feather"
+            />
+          </TouchableWithoutFeedback>
           <Icon
             style={styles.post_icons}
             name="md-paper-plane-outline"
@@ -58,14 +94,14 @@ const Post = ({ post }) => {
         <Icon name="download" type="feather" />
       </View>
       <View style={styles.like_comment_section}>
-        <Text style={{ marginTop: 5, fontWeight: "bold", fontSize: 14 }}></Text>
+        <Text style={{ marginTop: 5, fontSize: 14 }}>Like {likeLength}</Text>
         <View style={{ flex: 1, flexDirection: "row" }}>
           <Text style={{ fontWeight: "bold" }}>{post.user_name}</Text>
           <Text style={{ fontWeight: "400", fontSize: 14, paddingLeft: 5 }}>
             {post.description}
           </Text>
         </View>
-        {/* <CommentBox /> */}
+        <CommentBox postID={post.post_id} commentInputRef={commentInputRef} />
         <Text
           style={{
             color: "grey",
@@ -77,13 +113,7 @@ const Post = ({ post }) => {
           View all 103 comments
         </Text>
         <View style={styles.flex_setting}>
-          <Avatar
-            size={24}
-            rounded
-            source={{
-              uri: "https://randomuser.me/api/portraits/men/36.jpg",
-            }}
-          />
+          <Text style={styles.date_time}>{formattedTime}</Text>
         </View>
         <Text
           style={{
@@ -91,9 +121,7 @@ const Post = ({ post }) => {
             color: "grey",
             fontWeight: "700",
           }}
-        >
-          55 minutes ago
-        </Text>
+        ></Text>
       </View>
     </View>
   );
@@ -148,5 +176,9 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
+  },
+  date_time: {
+    fontSize: 10,
+    marginTop: 2,
   },
 });

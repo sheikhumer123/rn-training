@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Feather from "react-native-vector-icons/Feather";
@@ -7,6 +7,7 @@ import AddPostScreen from "../screens/AddPostScreen";
 import SearchScreen from "../screens/SearchScreen";
 import ProfileAndSettingScreen from "../screens/ProfileAndSettingScreen";
 import ReelsVideosScreen from "../screens/ReelsVideosScreen";
+import MainContext from "../MainContext/MainContext";
 import { Avatar } from "@rneui/themed";
 
 import { AppProvider } from "../navigation/PostNavigator";
@@ -14,6 +15,7 @@ import { AppProvider } from "../navigation/PostNavigator";
 import HomeNavigator from "./HomeNavigator";
 
 const MainNavigator = () => {
+  const { currentUser } = useContext(MainContext);
   const Tab = createBottomTabNavigator();
 
   return (
@@ -74,10 +76,10 @@ const MainNavigator = () => {
               tabBarIcon: () => {
                 return (
                   <Avatar
-                    size={28}
+                    size={27}
                     rounded
                     source={{
-                      uri: "https://randomuser.me/api/portraits/men/36.jpg",
+                      uri: currentUser.user_img,
                     }}
                   />
                 );

@@ -8,7 +8,9 @@ import { AppContext } from "../navigation/PostNavigator";
 
 const PostSection = () => {
   const [load, setLoad] = useState(true);
+
   const [posts, setPosts] = useState([]);
+
   const { refreshPosts } = useContext(AppContext);
 
   useEffect(() => {
