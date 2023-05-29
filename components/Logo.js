@@ -18,6 +18,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   sm: { width: 128, height: 40.4 },
-  addpostsm: { width: 128, height: 40.4 },
+
   lg: { width: 128, height: 40.4, marginBottom: 0 },
 });

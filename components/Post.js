@@ -57,7 +57,7 @@ const Post = ({ post }) => {
             size={32}
             rounded
             source={{
-              uri: currentUser.userImg,
+              uri: currentUser.user_img,
             }}
           />
           <Text style={styles.post_user_name}>{post.user_name}</Text>
@@ -96,10 +96,8 @@ const Post = ({ post }) => {
         <Icon name="download" type="feather" />
       </View>
       <View style={styles.like_comment_section}>
-        <Text style={{ marginTop: 5, fontWeight: "bold", fontSize: 14 }}>
-          {likeLength} likes
-        </Text>
-        <View style={{ flex: 1, flexDirection: "row", alignContent: "center" }}>
+        <Text style={{ marginTop: 5, fontWeight: "bold", fontSize: 14 }}></Text>
+        <View style={{ flex: 1, flexDirection: "row" }}>
           <Text style={{ fontWeight: "bold" }}>{post.user_name}</Text>
           <Text style={{ fontWeight: "400", fontSize: 14, paddingLeft: 5 }}>
             {post.description}

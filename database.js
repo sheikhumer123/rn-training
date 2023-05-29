@@ -18,11 +18,8 @@ import {
   updateDoc,
   arrayUnion,
 } from "firebase/firestore";
-
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-
 import "react-native-get-random-values";
-
 import { v4 as uuidv4 } from "uuid";
 
 const app = getApp();
@@ -41,18 +38,15 @@ export const picUriDatabase = async (uri) => {
   const name = uuidv4();
   const filename = `${name}.jpg`;
   const imageRef = ref(storage, `user_images/${filename}`);
-
   const response = await fetch(uri);
   const blob = await response.blob();
-
   await uploadBytes(imageRef, blob);
-
   return await getDownloadURL(imageRef);
 };
 
-export const createUserDB = async (userDetails, currentUser) => {
+export const createUserDB = async (userDetails, uid) => {
   try {
-    await setDoc(doc(db, "users", currentUser.uid), userDetails);
+    await setDoc(doc(db, "users", uid), userDetails);
   } catch (error) {
     console.log(error);
   }
@@ -69,7 +63,7 @@ export const getUserDB = async (uid) => {
   }
 };
 
-export const postPicUplad = async (uri) => {
+export const postPicUpload = async (uri) => {
   const name = uuidv4();
   const filename = `${name}.jpg`;
   const imageRef = ref(storage, `post_images/${filename}`);
