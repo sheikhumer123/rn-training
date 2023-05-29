@@ -7,5 +7,8 @@ export const app = {
     center_text: {
       textAlign: "center",
     },
+    bold_text: {
+      fontWeight: "bold",
+    },
   },
 };
