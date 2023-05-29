@@ -56,7 +56,7 @@ const AddPostScreen = () => {
     setLoading(true);
     let downloadUrl = await uploadPostImage();
     let userDisplayName = currentUser.username || "";
-    let postDetail = {
+    let postDetail = await {
       img: downloadUrl,
       comments: [],
       description: addDesc,

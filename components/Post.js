@@ -12,11 +12,10 @@ import CommentBox from "./CommentBox";
 import moment from "moment";
 
 import MainContext from "../MainContext/MainContext";
-import { Like, getLikesLength } from "../database";
+import { likeFunction, getLikesLength } from "../database";
 
 const Post = ({ post }) => {
   const commentInputRef = useRef(null);
-
   const uploadTime = post.upload_time;
 
   const timestamp = moment
@@ -27,20 +26,19 @@ const Post = ({ post }) => {
   const { currentUser } = useContext(MainContext);
   const [like, setLike] = useState({
     user_id: currentUser.uid,
-    likedby: currentUser.username,
+    liked_by: currentUser.username,
   });
   const [likeLength, setLikeLength] = useState("");
 
   const likePost = async () => {
-    const likesLength = await Like({ currentUser, like, post });
-
-    const length = await getLikesLength({ post });
-    setLikeLength(length);
+    await likeFunction({ currentUser, like, post });
+    const likesLength = await getLikesLength(post.post_id);
+    setLikeLength(likesLength);
   };
 
   useEffect(() => {
     const fetchLikesLength = async () => {
-      const length = await getLikesLength({ post });
+      const length = await getLikesLength(post.post_id);
       setLikeLength(length);
     };
     fetchLikesLength();
@@ -96,7 +94,7 @@ const Post = ({ post }) => {
         <Icon name="download" type="feather" />
       </View>
       <View style={styles.like_comment_section}>
-        <Text style={{ marginTop: 5, fontWeight: "bold", fontSize: 14 }}></Text>
+        <Text style={{ marginTop: 5, fontSize: 14 }}>Like {likeLength}</Text>
         <View style={{ flex: 1, flexDirection: "row" }}>
           <Text style={{ fontWeight: "bold" }}>{post.user_name}</Text>
           <Text style={{ fontWeight: "400", fontSize: 14, paddingLeft: 5 }}>
