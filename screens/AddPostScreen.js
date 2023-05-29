@@ -9,7 +9,7 @@ import {
   Text,
 } from "react-native";
 import { AppContext } from "../navigation/PostNavigator";
-import { createPostDb, postPicUplad } from "../database";
+import { createPostDb, postPicUpload } from "../database";
 import { Button } from "@rneui/themed";
 import MainContext from "../MainContext/MainContext";
 import * as ImagePicker from "expo-image-picker";
@@ -43,7 +43,7 @@ const AddPostScreen = () => {
   };
 
   const uploadPostImage = async () => {
-    return await postPicUplad(image);
+    return await postPicUpload(image);
   };
 
   const handlePostButtonPress = async () => {
@@ -56,7 +56,7 @@ const AddPostScreen = () => {
     setLoading(true);
     let downloadUrl = await uploadPostImage();
     let userDisplayName = currentUser.username || "";
-    let postDetail = {
+    let postDetail = await {
       img: downloadUrl,
       comments: [],
       description: addDesc,

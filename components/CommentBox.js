@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import Feather from "react-native-vector-icons/Feather";
 import MainContext from "../MainContext/MainContext";
-import { Comment, getComments } from "../database";
+import { commented, getComments } from "../database";
 
 import "react-native-get-random-values";
 
@@ -28,12 +28,12 @@ const CommentBox = ({ postID, commentInputRef }) => {
 
   const addComment = async () => {
     if (comment.comment.trim() !== "") {
-      await Comment({ postID, comment });
+      await commented({ postID, comment });
       const updatedComments = await getComments({ postID }); // Fetch the updated comments
 
       setComments(updatedComments); // Update the comments state with the updated comments
     } else {
-      alert("lekh ty ly ");
+      alert("Write something first");
     }
     setComment({
       comment: "",

@@ -79,7 +79,7 @@ const MainNavigator = () => {
                     size={27}
                     rounded
                     source={{
-                      uri: currentUser.userImg,
+                      uri: currentUser.user_img,
                     }}
                   />
                 );

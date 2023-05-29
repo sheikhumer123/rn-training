@@ -4,38 +4,38 @@ import { Button, Input } from "react-native-elements";
 
 import { updateUserPass } from "../database";
 import { CheckBox } from "@rneui/base";
+import { app } from "../constants";
 
 const PrivacyAndSettings = () => {
   const [pass, setPass] = useState("");
-  const [cnfrmPass, setCnfrmPass] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [currentPass, setCurrentPass] = useState("");
 
   const [user, setUser] = useState({
-    showPassword: true,
+    secureTextEntry: true,
     showPass: false,
   });
 
   const showHide = () => {
     setUser({
       ...user,
-      showPassword: !user.showPassword,
+      secureTextEntry: !user.secureTextEntry,
       showPass: !user.showPass,
     });
   };
 
   const UpdatePassword = () => {
-    if (pass == cnfrmPass) {
+    if (pass == confirmPassword) {
       updateUserPass(pass, currentPass);
     } else {
-      alert("Your Pass is Mismatched");
+      alert("Your Password is not matched");
     }
   };
   return (
     <View
       style={{
         flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
+        ...app.styles.center_view,
         paddingHorizontal: 10,
       }}
     >
@@ -45,7 +45,7 @@ const PrivacyAndSettings = () => {
         style={styles}
         value={currentPass}
         onChangeText={(txt) => setCurrentPass(txt)}
-        secureTextEntry={user.showPassword}
+        secureTextEntry={user.secureTextEntry}
       />
       <Text style={styles.text}>Type New Password</Text>
 
@@ -54,15 +54,15 @@ const PrivacyAndSettings = () => {
         style={styles}
         value={pass}
         onChangeText={(txt) => setPass(txt)}
-        secureTextEntry={user.showPassword}
+        secureTextEntry={user.secureTextEntry}
       />
       <Text style={styles.text}>Confirm Password</Text>
       <Input
         leftIcon={{ type: "font-awesome", name: "lock" }}
         style={styles}
-        value={cnfrmPass}
-        onChangeText={(txt) => setCnfrmPass(txt)}
-        secureTextEntry={user.showPassword}
+        value={confirmPassword}
+        onChangeText={(txt) => setConfirmPassword(txt)}
+        secureTextEntry={user.secureTextEntry}
       />
       <CheckBox
         containerStyle={{

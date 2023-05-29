@@ -18,11 +18,8 @@ import {
   updateDoc,
   arrayUnion,
 } from "firebase/firestore";
-
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-
 import "react-native-get-random-values";
-
 import { v4 as uuidv4 } from "uuid";
 
 const app = getApp();
@@ -41,18 +38,15 @@ export const picUriDatabase = async (uri) => {
   const name = uuidv4();
   const filename = `${name}.jpg`;
   const imageRef = ref(storage, `user_images/${filename}`);
-
   const response = await fetch(uri);
   const blob = await response.blob();
-
   await uploadBytes(imageRef, blob);
-
   return await getDownloadURL(imageRef);
 };
 
-export const createUserDB = async (userDetails, currentUser) => {
+export const createUserDB = async (userDetails, uid) => {
   try {
-    await setDoc(doc(db, "users", currentUser.uid), userDetails);
+    await setDoc(doc(db, "users", uid), userDetails);
   } catch (error) {
     console.log(error);
   }
@@ -69,7 +63,7 @@ export const getUserDB = async (uid) => {
   }
 };
 
-export const postPicUplad = async (uri) => {
+export const postPicUpload = async (uri) => {
   const name = uuidv4();
   const filename = `${name}.jpg`;
   const imageRef = ref(storage, `post_images/${filename}`);
@@ -81,7 +75,9 @@ export const postPicUplad = async (uri) => {
 
 export const createPostDb = async (postDetail) => {
   try {
-    const docRef = await addDoc(collection(db, "posts"), postDetail);
+    const docRef = doc(db, "posts", postDetail.post_id);
+    await setDoc(docRef, postDetail);
+    console.log("Post created successfully!");
   } catch (error) {
     console.log(error);
   }
@@ -109,7 +105,7 @@ export const updateUserPass = async (pass, currentPass) => {
   }
 };
 
-export const Comment = async ({ postID, comment }) => {
+export const commented = async ({ postID, comment }) => {
   const q = query(collection(db, "posts"), where("post_id", "==", postID));
   const querySnapshot = await getDocs(q);
   querySnapshot.forEach(async (doc) => {
@@ -137,7 +133,7 @@ export const getComments = async ({ postID }) => {
   return comments;
 };
 
-export const Like = async ({ currentUser, like, post }) => {
+export const likeFunction = async ({ currentUser, like, post }) => {
   const q = query(
     collection(db, "posts"),
     where("post_id", "==", post.post_id)
@@ -162,17 +158,13 @@ export const Like = async ({ currentUser, like, post }) => {
   await Promise.all(updatePromises);
 };
 
-export const getLikesLength = async ({ post }) => {
-  const q = query(
-    collection(db, "posts"),
-    where("post_id", "==", post.post_id)
-  );
-  const querySnapshot = await getDocs(q);
-  let likesLength = 0;
-  querySnapshot.forEach((doc) => {
-    const likes = doc.data().likes || []; // Get the existing likes or initialize an empty array
-    likesLength = likes.length; // Get the length of the likes array
-  });
-
-  return likesLength;
+export const getLikesLength = async (postId) => {
+  const docRef = doc(db, "posts", postId);
+  const docSnap = await getDoc(docRef);
+  if (docSnap.exists()) {
+    const post = docSnap.data();
+    const likesLength = post.likes ? post.likes.length : 0;
+    return likesLength;
+  } else {
+  }
 };
