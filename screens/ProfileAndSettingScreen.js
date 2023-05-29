@@ -1,22 +1,16 @@
 import React, { useContext } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Pressable,
-  SafeAreaView,
-  ScrollView,
-  TouchableWithoutFeedback,
-} from "react-native";
+import { View, Text, StyleSheet, SafeAreaView, ScrollView } from "react-native";
 
 import { useNavigation } from "@react-navigation/native";
-import { getAuth, signOut } from "firebase/auth";
+
 import Feather from "react-native-vector-icons/Feather";
 import MainContext from "../MainContext/MainContext";
 
 import { app } from "../constants";
 import { Button } from "react-native-elements";
 import DiscoverBox from "../components/DiscoverBox";
+import HighlightStories from "../components/HighlightStories";
+import ProfileTabNavigator from "../navigation/ProfileTabNavigator";
 
 const ProfileAndSettingScreen = (props) => {
   const navigation = useNavigation();
@@ -89,8 +83,25 @@ const ProfileAndSettingScreen = (props) => {
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             <View style={styles.discover_boxes}>
               <DiscoverBox />
+              <DiscoverBox />
+              <DiscoverBox />
+              <DiscoverBox />
+              <DiscoverBox />
             </View>
           </ScrollView>
+        </View>
+        <View style={styles.seciton_5_container}>
+          <Text style={app.styles.bold_text}>Story Highlights</Text>
+          <Text>Keep your favorite stories on your profile</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            <View style={styles.highlight_box}>
+              <HighlightStories />
+            </View>
+          </ScrollView>
+        </View>
+
+        <View style={styles.seciton_6_container}>
+          <ProfileTabNavigator />
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -134,6 +145,14 @@ const styles = StyleSheet.create({
   },
   seciton_4_container: {
     marginTop: 30,
+  },
+  seciton_5_container: {
+    marginTop: 20,
+    paddingHorizontal: 2,
+  },
+  seciton_6_container: {
+    marginTop: 20,
+    height: 300,
   },
   discover_boxes: {
     display: "flex",
