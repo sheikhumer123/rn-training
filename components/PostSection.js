@@ -18,8 +18,8 @@ const PostSection = () => {
   const loadPosts = async () => {
     setLoad(true);
     const data = await getAllPosts();
-    const reversedPosts = [...data].reverse();
-    setPosts(reversedPosts);
+    const sortedPosts = [...data].sort((a, b) => b.upload_time - a.upload_time);
+    setPosts(sortedPosts);
     setLoad(false);
   };
   return (

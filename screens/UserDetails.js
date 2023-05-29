@@ -42,14 +42,14 @@ const UserDetails = () => {
     let downloadUrl = await uploadUserDp();
     let userDetails = {
       username: userName,
-      userImg: downloadUrl,
+      user_img: downloadUrl,
       id: currentUser.uid,
     };
     await createUserDB(userDetails, currentUser.uid);
     setCurrentUser({
       ...currentUser,
       username: userName,
-      userImg: downloadUrl,
+      user_img: downloadUrl,
     });
     setLoading(false);
   };

@@ -4,10 +4,11 @@ import { Button, Input } from "react-native-elements";
 
 import { updateUserPass } from "../database";
 import { CheckBox } from "@rneui/base";
+import { app } from "../constants";
 
 const PrivacyAndSettings = () => {
   const [pass, setPass] = useState("");
-  const [cnfrmPass, setCnfrmPass] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [currentPass, setCurrentPass] = useState("");
 
   const [user, setUser] = useState({
@@ -24,7 +25,7 @@ const PrivacyAndSettings = () => {
   };
 
   const UpdatePassword = () => {
-    if (pass == cnfrmPass) {
+    if (pass == confirmPassword) {
       updateUserPass(pass, currentPass);
     } else {
       alert("Your Pass is Mismatched");
@@ -34,8 +35,7 @@ const PrivacyAndSettings = () => {
     <View
       style={{
         flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
+        ...app.styles.center_view,
         paddingHorizontal: 10,
       }}
     >
@@ -60,8 +60,8 @@ const PrivacyAndSettings = () => {
       <Input
         leftIcon={{ type: "font-awesome", name: "lock" }}
         style={styles}
-        value={cnfrmPass}
-        onChangeText={(txt) => setCnfrmPass(txt)}
+        value={confirmPassword}
+        onChangeText={(txt) => setConfirmPassword(txt)}
         secureTextEntry={user.showPassword}
       />
       <CheckBox

@@ -60,24 +60,19 @@ export const getUserDB = async (uid) => {
   }
 };
 
-export const postPicUplad = async (uri) => {
+export const postPicUpload = async (uri) => {
   const name = uuidv4();
   const filename = `${name}.jpg`;
   const imageRef = ref(storage, `post_images/${filename}`);
-
   const response = await fetch(uri);
   const blob = await response.blob();
-
   await uploadBytes(imageRef, blob);
-
   return await getDownloadURL(imageRef);
 };
 
 export const createPostDb = async (postDetail, currentUser) => {
-  console.log(postDetail);
   try {
     const docRef = await addDoc(collection(db, "posts"), postDetail);
-    console.log(docRef.id);
   } catch (error) {
     console.log(error);
   }
@@ -94,19 +89,12 @@ export const getAllPosts = async () => {
 
 export const updateUserPass = async (pass, currentPass) => {
   const auth = getAuth();
-
   const user = auth.currentUser;
-
   const newPassword = pass;
-
   const credential = EmailAuthProvider.credential(user.email, currentPass);
-
   try {
     await reauthenticateWithCredential(user, credential);
-
     await updatePassword(user, newPassword);
-
-    console.log("Password updated successfully.");
   } catch (error) {
     console.log(error);
   }
