@@ -33,7 +33,7 @@ const CommentBox = ({ postID, commentInputRef }) => {
 
       setComments(updatedComments); // Update the comments state with the updated comments
     } else {
-      alert("lekh ty ly ");
+      alert("Write something first");
     }
     setComment({
       comment: "",
