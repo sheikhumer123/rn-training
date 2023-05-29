@@ -1,21 +1,27 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { StyleSheet, View } from "react-native";
 import Post from "./Post";
 import { getAllPosts } from "../database";
 import PostLoader from "./PostLoader";
 
+import { AppContext } from "../navigation/PostNavigator";
+
 const PostSection = () => {
   const [load, setLoad] = useState(true);
   const [posts, setPosts] = useState([]);
+  const { refreshPosts } = useContext(AppContext);
+
+  useEffect(() => {
+    loadPosts();
+  }, [refreshPosts]);
+
   const loadPosts = async () => {
     setLoad(true);
     const data = await getAllPosts();
-    setPosts(data);
+    const sortedPosts = [...data].sort((a, b) => b.upload_time - a.upload_time);
+    setPosts(sortedPosts);
     setLoad(false);
   };
-  useEffect(() => {
-    loadPosts();
-  }, []);
   return (
     <View style={styles.post_screen}>
       {load ? (
