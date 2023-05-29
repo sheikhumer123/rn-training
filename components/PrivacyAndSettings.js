@@ -12,14 +12,14 @@ const PrivacyAndSettings = () => {
   const [currentPass, setCurrentPass] = useState("");
 
   const [user, setUser] = useState({
-    showPassword: true,
+    secureTextEntry: true,
     showPass: false,
   });
 
   const showHide = () => {
     setUser({
       ...user,
-      showPassword: !user.showPassword,
+      secureTextEntry: !user.secureTextEntry,
       showPass: !user.showPass,
     });
   };
@@ -28,7 +28,7 @@ const PrivacyAndSettings = () => {
     if (pass == confirmPassword) {
       updateUserPass(pass, currentPass);
     } else {
-      alert("Your Pass is Mismatched");
+      alert("Your Password is not matched");
     }
   };
   return (
@@ -45,7 +45,7 @@ const PrivacyAndSettings = () => {
         style={styles}
         value={currentPass}
         onChangeText={(txt) => setCurrentPass(txt)}
-        secureTextEntry={user.showPassword}
+        secureTextEntry={user.secureTextEntry}
       />
       <Text style={styles.text}>Type New Password</Text>
 
@@ -54,7 +54,7 @@ const PrivacyAndSettings = () => {
         style={styles}
         value={pass}
         onChangeText={(txt) => setPass(txt)}
-        secureTextEntry={user.showPassword}
+        secureTextEntry={user.secureTextEntry}
       />
       <Text style={styles.text}>Confirm Password</Text>
       <Input
@@ -62,7 +62,7 @@ const PrivacyAndSettings = () => {
         style={styles}
         value={confirmPassword}
         onChangeText={(txt) => setConfirmPassword(txt)}
-        secureTextEntry={user.showPassword}
+        secureTextEntry={user.secureTextEntry}
       />
       <CheckBox
         containerStyle={{
