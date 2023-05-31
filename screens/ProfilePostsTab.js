@@ -1,25 +1,55 @@
-import React, { useContext, useState, useEffect } from "react";
-import { View, StyleSheet, Text, Image } from "react-native";
+import React, { useContext, useState, useCallback } from "react";
+import { View, StyleSheet, Text, Image, ScrollView } from "react-native";
 import MainContext from "../MainContext/MainContext";
 import { getUserPosts } from "../database";
-import { Button } from "@rneui/base";
+import { useFocusEffect } from "@react-navigation/native";
+import { Skeleton } from "@rneui/themed";
 
 const ProfilePostsTab = () => {
   const { currentUser } = useContext(MainContext);
   const [userPosts, setUserPosts] = useState([]);
+  const [profilePostLoader, setProfilePostLoader] = useState(false);
 
-  useEffect(() => {
-    fetchUserPosts();
-  }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchUserPosts();
+
+      return () => {};
+    }, [])
+  );
   const fetchUserPosts = async () => {
+    setProfilePostLoader(true);
     const posts = await getUserPosts(currentUser.id);
-
     setUserPosts(posts);
+    setProfilePostLoader(false);
   };
 
   return (
     <>
-      <View style={styles.profile_post_tab_container}>
+      {profilePostLoader ? (
+        <View>
+          <View style={styles.profile_post_loading_container}>
+            <Skeleton
+              animation="wave"
+              width={120}
+              height={100}
+              style={{ marginTop: 5, marginLeft: 3 }}
+            />
+            <Skeleton
+              animation="wave"
+              width={120}
+              height={100}
+              style={{ marginTop: 5, marginLeft: 3 }}
+            />
+            <Skeleton
+              animation="wave"
+              width={120}
+              height={100}
+              style={{ marginTop: 5, marginLeft: 3 }}
+            />
+          </View>
+        </View>
+      ) : (
         <View style={styles.profile_post_tab_container}>
           {userPosts.map((post, index) => (
             <View key={index} style={styles.user_profile_posts}>
@@ -27,7 +57,7 @@ const ProfilePostsTab = () => {
             </View>
           ))}
         </View>
-      </View>
+      )}
     </>
   );
 };
@@ -39,6 +69,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "space-between",
+    flex: 1,
   },
   user_profile_posts: {
     height: 100,
@@ -50,5 +81,9 @@ const styles = StyleSheet.create({
     height: 100,
     width: 120,
     marginTop: 5,
+  },
+  profile_post_loading_container: {
+    display: "flex",
+    flexDirection: "row",
   },
 });

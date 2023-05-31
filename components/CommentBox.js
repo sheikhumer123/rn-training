@@ -10,43 +10,54 @@ import {
 import Feather from "react-native-vector-icons/Feather";
 import MainContext from "../MainContext/MainContext";
 import { commented, getComments } from "../database";
+import { useNavigation } from "@react-navigation/native";
 
 import "react-native-get-random-values";
 
 import { v4 as uuidv4 } from "uuid";
 
 const CommentBox = ({ postID, commentInputRef }) => {
+  const navigation = useNavigation();
   const { currentUser } = useContext(MainContext);
   const key_id = uuidv4();
   const [comments, setComments] = useState([]);
+  const [commentLength, setCommentLength] = useState();
+
   const [comment, setComment] = useState({
+    user_img: currentUser.user_img,
     add_by: currentUser.username,
     comment: "",
     upload_time: new Date(),
     id: key_id,
   });
 
+  const commentIconStyle = {
+    height: commentLength < 2 ? "auto" : 40,
+    overflow: "hidden",
+  };
+
   const addComment = async () => {
     if (comment.comment.trim() !== "") {
       await commented({ postID, comment });
-      const updatedComments = await getComments({ postID }); // Fetch the updated comments
-
-      setComments(updatedComments); // Update the comments state with the updated comments
+      const updatedComments = await getComments({ postID });
+      setCommentLength(updatedComments.length); // Update commentLength
+      setComments(updatedComments);
     } else {
       alert("Write something first");
     }
-    setComment({
+    setComment((prevComment) => ({
+      ...prevComment,
       comment: "",
-    });
+    }));
     Keyboard.dismiss();
   };
 
   useEffect(() => {
     const fetchComments = async () => {
       const retrievedComments = await getComments({ postID });
+      setCommentLength(retrievedComments.length);
       setComments(retrievedComments);
     };
-
     fetchComments();
   }, []);
 
@@ -75,7 +86,7 @@ const CommentBox = ({ postID, commentInputRef }) => {
         </TouchableOpacity>
       </View>
 
-      <View style={styles.comment_area}>
+      <View style={commentIconStyle}>
         {comments.map((comment) => (
           <View style={styles.setting}>
             <Text style={{ fontWeight: "bold" }} key={comment.username}>
@@ -87,6 +98,14 @@ const CommentBox = ({ postID, commentInputRef }) => {
           </View>
         ))}
       </View>
+      {commentLength > 2 ? (
+        <Text
+          onPress={() => navigation.navigate("OpenCommentsScreen", postID)}
+          style={styles.text_all_comments}
+        >
+          View all Comments
+        </Text>
+      ) : null}
     </View>
   );
 };
@@ -111,5 +130,12 @@ const styles = StyleSheet.create({
   setting: {
     display: "flex",
     flexDirection: "row",
+  },
+  text_all_comments: {
+    color: "grey",
+    fontSize: 14,
+    fontWeight: "600",
+    marginTop: 1,
+    fontSize: 13.5,
   },
 });

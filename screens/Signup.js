@@ -31,13 +31,21 @@ const Signup = ({ navigation }) => {
   };
 
   const signUp = () => {
-    setLoading(true);
-    const auth = getAuth();
-    createUserWithEmailAndPassword(auth, user.email, user.password).then(
-      (userCredential) => {
-        setLoading(false);
-      }
-    );
+    if (user.password === user.confirmPassword && user.agreement == true) {
+      setLoading(true);
+      const auth = getAuth();
+      createUserWithEmailAndPassword(auth, user.email, user.password)
+        .then((userCredential) => {
+          setLoading(false);
+        })
+        .catch((error) => {
+          // Handle any errors during sign up
+          setLoading(false);
+          console.log(error);
+        });
+    } else {
+      alert("Password does not match or agreement is not checked.");
+    }
   };
 
   return (
@@ -98,11 +106,7 @@ const Signup = ({ navigation }) => {
             title="show password"
           />
         </View>
-        <TextInput
-          style={styles.input}
-          placeholder="name"
-          onChangeText={(txt) => setUser({ ...user, name: txt })}
-        />
+
         <View
           style={{
             width: "105%",
@@ -183,6 +187,7 @@ export default Signup;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    marginTop: 30,
   },
   containerMid: {
     flex: 1,
