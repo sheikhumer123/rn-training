@@ -77,16 +77,7 @@ const UserDetails = () => {
             </View>
           </TouchableWithoutFeedback>
         </View>
-        <Image
-          style={{
-            width: 40,
-            height: 40,
-            position: "absolute",
-            bottom: -10,
-            right: -10,
-          }}
-          source={require("../assets/images/camera-icon.png")}
-        />
+
         <TextInput
           style={styles.username_input}
           onChangeText={(text) => setUserName(text)}

@@ -3,6 +3,7 @@ import * as React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import Home from "../screens/Home";
+import CommentScreen from "../screens/Home";
 import Notification from "../components/Notification";
 import PrivacyAndSettings from "../components/PrivacyAndSettings";
 
@@ -28,13 +29,13 @@ const HomeNavigator = (props) => {
           },
         }}
       />
+
       <Stack.Screen
-        name="PrivacyAndSettings"
-        component={PrivacyAndSettings}
+        name="CommentScreen"
+        component={CommentScreen}
         options={{
           headerTitleStyle: {
-            color: "red",
-            fontSize: 22,
+            headerShown: false,
           },
         }}
       />

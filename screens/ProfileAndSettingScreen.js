@@ -1,10 +1,17 @@
-import React, { useContext } from "react";
-import { View, Text, StyleSheet, SafeAreaView, ScrollView } from "react-native";
-
-import { useNavigation } from "@react-navigation/native";
+import React, { useContext, useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  SafeAreaView,
+  ScrollView,
+  TouchableWithoutFeedback,
+} from "react-native";
+import { Avatar } from "@rneui/themed";
 
 import Feather from "react-native-vector-icons/Feather";
 import MainContext from "../MainContext/MainContext";
+import { getAuth, signOut } from "firebase/auth";
 
 import { app } from "../constants";
 import { Button } from "react-native-elements";
@@ -13,8 +20,12 @@ import HighlightStories from "../components/HighlightStories";
 import ProfileTabNavigator from "../navigation/ProfileTabNavigator";
 
 const ProfileAndSettingScreen = (props) => {
-  const navigation = useNavigation();
-  const { setCurrentUser } = useContext(MainContext);
+  const { setCurrentUser, currentUser } = useContext(MainContext);
+  const [discoverBox, setDiscoverBox] = useState(true);
+
+  const discoverBoxToggle = () => {
+    setDiscoverBox(!discoverBox);
+  };
 
   return (
     <SafeAreaView style={styles.setting_area}>
@@ -22,7 +33,13 @@ const ProfileAndSettingScreen = (props) => {
         <View style={styles.profile_page_top_nav}></View>
         <View style={styles.section_1_container}>
           <View style={styles.profile_page_section_1}>
-            <View style={styles.profile_page_img}></View>
+            <Avatar
+              size={80}
+              rounded
+              source={{
+                uri: currentUser.user_img,
+              }}
+            />
             <View style={styles.section_1_text}>
               <Text style={app.styles.center_text}>1</Text>
               <Text style={app.styles.center_text}>Posts</Text>
@@ -75,21 +92,21 @@ const ProfileAndSettingScreen = (props) => {
             />
           </View>
           <View style={styles.add_friend_button}>
-            <Feather name={"user-plus"} size={18} color={"black"} />
+            <TouchableWithoutFeedback onPress={discoverBoxToggle}>
+              <Feather name={"user-plus"} size={18} color={"black"} />
+            </TouchableWithoutFeedback>
           </View>
         </View>
+
         <View style={styles.seciton_4_container}>
           <Text>Discover people</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             <View style={styles.discover_boxes}>
               <DiscoverBox />
-              <DiscoverBox />
-              <DiscoverBox />
-              <DiscoverBox />
-              <DiscoverBox />
             </View>
           </ScrollView>
         </View>
+
         <View style={styles.seciton_5_container}>
           <Text style={app.styles.bold_text}>Story Highlights</Text>
           <Text>Keep your favorite stories on your profile</Text>
@@ -103,6 +120,14 @@ const ProfileAndSettingScreen = (props) => {
         <View style={styles.seciton_6_container}>
           <ProfileTabNavigator />
         </View>
+        <Button
+          title="Log Out"
+          onPress={() => {
+            const auth = getAuth();
+            signOut(auth);
+            setCurrentUser({});
+          }}
+        />
       </ScrollView>
     </SafeAreaView>
   );
@@ -155,8 +180,6 @@ const styles = StyleSheet.create({
     height: 300,
   },
   discover_boxes: {
-    display: "flex",
-    flexDirection: "row",
     marginTop: 10,
   },
 
@@ -231,13 +254,5 @@ const styles = StyleSheet.create({
           </View>
         </TouchableWithoutFeedback> */
   {
-    /* <Button
-        title="Log Out"
-        onPress={() => {
-          const auth = getAuth();
-          signOut(auth);
-          setCurrentUser({});
-        }}
-      /> */
   }
 }

@@ -1,41 +1,67 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { Button } from "react-native-elements";
 import { Avatar } from "@rneui/themed";
+import { getAllUsers } from "../database";
 
 const DiscoverBox = () => {
-  return (
-    <View style={styles.discover_people_box}>
-      <View style={styles.discover_people_box_dp}>
-        <Avatar
-          size={65}
-          rounded
-          source={{
-            uri: "https://randomuser.me/api/portraits/men/10.jpg",
-          }}
-        />
-      </View>
+  const [discoverBox, setDiscoverBox] = useState(true);
 
-      <Text style={styles.discover_box_username}>Abdullah Arif</Text>
-      <Text style={styles.discover_box_text}>Suggested for you</Text>
-      <Button
-        containerStyle={{
-          width: "90%",
-          height: 30,
-          marginTop: 5,
-          borderRadius: 7,
-        }}
-        titleStyle={{
-          fontSize: 13,
-          color: "white",
-        }}
-        buttonStyle={{
-          margin: 0,
-          paddingTop: 5,
-        }}
-        title={"Follow"}
-      />
-    </View>
+  const [allUsersData, setAllUsersData] = useState([]);
+  useEffect(() => {
+    getAllUserInfo();
+  }, []);
+
+  const discoverBoxToggle = () => {
+    setDiscoverBox(!discoverBox);
+  };
+  const getAllUserInfo = async () => {
+    const data = await getAllUsers();
+    setAllUsersData(data);
+  };
+
+  return (
+    <>
+      <View style={{ flexDirection: "row" }}>
+        {allUsersData.map((user, index) =>
+          discoverBox ? (
+            <View key={index} style={styles.discover_people_box}>
+              <View style={styles.discover_people_box_dp}>
+                <Avatar
+                  size={65}
+                  rounded
+                  source={{
+                    uri: user.user_img,
+                  }}
+                />
+              </View>
+
+              <Text style={styles.discover_box_username}>{user.username}</Text>
+              <Text style={styles.discover_box_text}>Suggested for you</Text>
+              <Button
+                containerStyle={{
+                  width: "90%",
+                  height: 30,
+                  marginTop: 5,
+                  borderRadius: 7,
+                }}
+                titleStyle={{
+                  fontSize: 13,
+                  color: "white",
+                }}
+                buttonStyle={{
+                  margin: 0,
+                  paddingTop: 5,
+                }}
+                title={"Follow"}
+              />
+            </View>
+          ) : (
+            ""
+          )
+        )}
+      </View>
+    </>
   );
 };
 export default DiscoverBox;

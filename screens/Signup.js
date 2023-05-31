@@ -1,13 +1,8 @@
 import React, { useState } from "react";
 import { CheckBox, Button } from "@rneui/themed";
-import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  updateProfile,
-} from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 
 import { StyleSheet, View, TextInput, Text } from "react-native";
-
 import Logo from "../components/Logo";
 
 const Signup = ({ navigation }) => {
@@ -16,7 +11,6 @@ const Signup = ({ navigation }) => {
     password: "",
     confirmPassword: "",
     showPassword: true,
-    name: "",
     agreement: false,
     showPass: false,
   });
@@ -41,10 +35,7 @@ const Signup = ({ navigation }) => {
     const auth = getAuth();
     createUserWithEmailAndPassword(auth, user.email, user.password).then(
       (userCredential) => {
-        const user = firebase.auth().currentUser;
-        return updateProfile(user, {
-          displayName: user.name,
-        });
+        setLoading(false);
       }
     );
   };
@@ -110,7 +101,6 @@ const Signup = ({ navigation }) => {
         <TextInput
           style={styles.input}
           placeholder="name"
-          value={user.name}
           onChangeText={(txt) => setUser({ ...user, name: txt })}
         />
         <View

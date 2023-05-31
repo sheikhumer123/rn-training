@@ -13,8 +13,10 @@ import moment from "moment";
 
 import MainContext from "../MainContext/MainContext";
 import { likeFunction, getLikesLength } from "../database";
+import { useNavigation } from "@react-navigation/native";
 
 const Post = ({ post }) => {
+  const navigation = useNavigation();
   const commentInputRef = useRef(null);
   const uploadTime = post.upload_time;
 
@@ -55,7 +57,7 @@ const Post = ({ post }) => {
             size={32}
             rounded
             source={{
-              uri: currentUser.user_img,
+              uri: post.post_user_img,
             }}
           />
           <Text style={styles.post_user_name}>{post.user_name}</Text>
@@ -102,16 +104,20 @@ const Post = ({ post }) => {
           </Text>
         </View>
         <CommentBox postID={post.post_id} commentInputRef={commentInputRef} />
-        <Text
-          style={{
-            color: "grey",
-            fontSize: 14,
-            fontWeight: "600",
-            marginTop: 3,
-          }}
+        <TouchableWithoutFeedback
+          onPress={() => navigation.navigate("CommentScreen")}
         >
-          View all 103 comments
-        </Text>
+          <Text
+            style={{
+              color: "grey",
+              fontSize: 14,
+              fontWeight: "600",
+              marginTop: 3,
+            }}
+          >
+            View all comments
+          </Text>
+        </TouchableWithoutFeedback>
         <View style={styles.flex_setting}>
           <Text style={styles.date_time}>{formattedTime}</Text>
         </View>
