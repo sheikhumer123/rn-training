@@ -12,11 +12,9 @@ import CommentBox from "./CommentBox";
 import moment from "moment";
 
 import MainContext from "../MainContext/MainContext";
-import { likeFunction, getLikesLength } from "../database";
-import { useNavigation } from "@react-navigation/native";
+import { likeFunction, getLikesLength, getComments } from "../database";
 
 const Post = ({ post }) => {
-  const navigation = useNavigation();
   const commentInputRef = useRef(null);
   const uploadTime = post.upload_time;
 
@@ -60,7 +58,7 @@ const Post = ({ post }) => {
               uri: post.post_user_img,
             }}
           />
-          <Text style={styles.post_user_name}>{post.user_name}</Text>
+          <Text style={styles.post_user_name}>{post.username}</Text>
         </View>
       </View>
       <View style={styles.post_data}>
@@ -104,20 +102,6 @@ const Post = ({ post }) => {
           </Text>
         </View>
         <CommentBox postID={post.post_id} commentInputRef={commentInputRef} />
-        <TouchableWithoutFeedback
-          onPress={() => navigation.navigate("CommentScreen")}
-        >
-          <Text
-            style={{
-              color: "grey",
-              fontSize: 14,
-              fontWeight: "600",
-              marginTop: 3,
-            }}
-          >
-            View all comments
-          </Text>
-        </TouchableWithoutFeedback>
         <View style={styles.flex_setting}>
           <Text style={styles.date_time}>{formattedTime}</Text>
         </View>
@@ -145,7 +129,7 @@ const styles = StyleSheet.create({
   post_user_image: {
     height: 30,
     width: 30,
-    backgroundColor: "black",
+
     borderRadius: 50,
   },
   post_user_name: {
@@ -165,7 +149,7 @@ const styles = StyleSheet.create({
   post_data: {
     height: 280,
     width: "100%",
-    backgroundColor: "red",
+
     marginTop: 10,
   },
   like_comment_section: {

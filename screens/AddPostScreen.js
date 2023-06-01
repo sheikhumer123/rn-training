@@ -56,13 +56,13 @@ const AddPostScreen = () => {
     setLoading(true);
     let downloadUrl = await uploadPostImage();
     let userDisplayName = currentUser.username || "";
-    let postDetail = await {
+    let postDetail = {
       img: downloadUrl,
       comments: [],
       description: addDesc,
       likes: [],
       upload_time: new Date(),
-      user_name: userDisplayName,
+      username: userDisplayName,
       id: currentUser.uid,
       post_id: uuidv4(),
       post_user_img: currentUser.user_img,

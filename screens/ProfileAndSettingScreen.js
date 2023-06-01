@@ -18,8 +18,16 @@ import { Button } from "react-native-elements";
 import DiscoverBox from "../components/DiscoverBox";
 import HighlightStories from "../components/HighlightStories";
 import ProfileTabNavigator from "../navigation/ProfileTabNavigator";
+import SettingModal from "../components/SettingModal";
+import AccountSwitchModal from "../components/AccountSwicthModal";
+import CreateModal from "../components/CreateModal";
+import { useNavigation } from "@react-navigation/native";
 
 const ProfileAndSettingScreen = (props) => {
+  const navigation = useNavigation();
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [createModal, setCreateModal] = useState(false);
+  const [AccountModal, setAccountModal] = useState(false);
   const { setCurrentUser, currentUser } = useContext(MainContext);
   const [discoverBox, setDiscoverBox] = useState(true);
 
@@ -30,7 +38,30 @@ const ProfileAndSettingScreen = (props) => {
   return (
     <SafeAreaView style={styles.setting_area}>
       <ScrollView>
-        <View style={styles.profile_page_top_nav}></View>
+        <View style={styles.profile_page_top_nav}>
+          <View style={styles.top_nav_flex_1}>
+            <Text style={styles.top_nav_email}>{currentUser.email}</Text>
+            <TouchableWithoutFeedback>
+              <Feather
+                onPress={() => setAccountModal((q) => !q)}
+                style={{ marginRight: 8, marginTop: 4 }}
+                name={"arrow-down"}
+                size={16}
+                color={"black"}
+              />
+            </TouchableWithoutFeedback>
+          </View>
+          <View style={styles.top_nav_flex}>
+            <TouchableWithoutFeedback onPress={() => setCreateModal((q) => !q)}>
+              <Feather name={"plus-square"} size={23} color={"black"} />
+            </TouchableWithoutFeedback>
+            <TouchableWithoutFeedback
+              onPress={() => setModalVisible((q) => !q)}
+            >
+              <Feather name="menu" size={23} color="black" />
+            </TouchableWithoutFeedback>
+          </View>
+        </View>
         <View style={styles.section_1_container}>
           <View style={styles.profile_page_section_1}>
             <Avatar
@@ -55,12 +86,13 @@ const ProfileAndSettingScreen = (props) => {
           </View>
         </View>
         <View style={styles.section_2_container}>
-          <Text>Umer</Text>
-          <Text>Bio</Text>
+          <Text>{currentUser.username}</Text>
+          <Text>{currentUser.bio}</Text>
         </View>
         <View style={styles.section_3_container}>
           <View style={styles.profile_screen_buttons}>
             <Button
+              onPress={() => navigation.navigate("EditProfileScreen")}
               buttonStyle={{
                 backgroundColor: "#ccc",
               }}
@@ -75,6 +107,7 @@ const ProfileAndSettingScreen = (props) => {
               }}
               title={"Edit Profile"}
             />
+
             <Button
               buttonStyle={{
                 backgroundColor: "#ccc",
@@ -128,6 +161,18 @@ const ProfileAndSettingScreen = (props) => {
             setCurrentUser({});
           }}
         />
+        <SettingModal
+          isModalVisible={isModalVisible}
+          setModalVisible={setModalVisible}
+        />
+        <AccountSwitchModal
+          AccountModal={AccountModal}
+          setAccountModal={setAccountModal}
+        />
+        <CreateModal
+          createModal={createModal}
+          setCreateModal={setCreateModal}
+        />
       </ScrollView>
     </SafeAreaView>
   );
@@ -138,13 +183,10 @@ const styles = StyleSheet.create({
   setting_area: {
     paddingTop: 10,
     paddingHorizontal: 10,
-
     paddingTop: 50,
-    flex: 1,
   },
   setting_option: {
     height: 50,
-
     display: "flex",
     flexDirection: "row",
     backgroundColor: "red",
@@ -177,7 +219,8 @@ const styles = StyleSheet.create({
   },
   seciton_6_container: {
     marginTop: 20,
-    height: 300,
+    flex: 1,
+    height: 200,
   },
   discover_boxes: {
     marginTop: 10,
@@ -190,9 +233,12 @@ const styles = StyleSheet.create({
     flex: 10,
   },
   profile_page_top_nav: {
-    height: 50,
+    display: "flex",
+    flexDirection: "row",
+    height: 35,
     width: "100%",
-    backgroundColor: "red",
+    justifyContent: "space-between",
+    paddingHorizontal: 10,
   },
   profile_page_img: {
     height: 80,
@@ -233,26 +279,24 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "pink",
   },
+  top_nav_flex: {
+    display: "flex",
+    flexDirection: "row",
+    flex: 0.2,
+    justifyContent: "space-between",
+    alignContent: "center",
+    alignItems: "center",
+  },
+  top_nav_flex_1: {
+    display: "flex",
+    flexDirection: "row",
+    flex: 0.5,
+    justifyContent: "space-between",
+    alignContent: "center",
+    alignItems: "center",
+  },
+  top_nav_email: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
 });
-
-{
-  /* <TouchableWithoutFeedback
-          onPress={() => navigation.navigate("PrivacyAndSettings")}
-        >
-          <View style={styles.setting_option}>
-            <Feather
-              style={{
-                position: "absolute",
-                top: 12,
-                right: 10,
-              }}
-              name="settings"
-              size={22}
-              color={"dodgerblue"}
-            />
-            <Text style={styles.setting_option_text}>Privacy and Secuity</Text>
-          </View>
-        </TouchableWithoutFeedback> */
-  {
-  }
-}

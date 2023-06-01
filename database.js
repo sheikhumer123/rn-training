@@ -180,11 +180,46 @@ export const getUserPosts = async (userID) => {
 };
 
 export const getAllUsers = async () => {
-  const User = [];
+  const user = [];
   const querySnapshot = await getDocs(collection(db, "users"));
   querySnapshot.forEach((doc) => {
-    // doc.data() is never undefined for query doc snapshots
-    User.push(doc.data());
+    user.push(doc.data());
   });
-  return User;
+  return user;
+};
+
+export const getEditUserDB = async (uid) => {
+  try {
+    const userDocRef = doc(db, "users", uid);
+    const userDocSnapshot = await getDoc(userDocRef);
+    const existingData = userDocSnapshot.data();
+    const hasBioField = existingData && existingData.hasOwnProperty("bio");
+    const hasGenderField =
+      existingData && existingData.hasOwnProperty("gender");
+    if (!hasBioField) {
+      await updateDoc(userDocRef, { bio: "" });
+    }
+    if (!hasGenderField) {
+      await updateDoc(userDocRef, { gender: "" });
+    }
+    const updatedUserDocSnapshot = await getDoc(userDocRef);
+    const updatedUserData = updatedUserDocSnapshot.data();
+    return updatedUserData;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const editUserDB = async (getData, uid, updateimage, currentUser) => {
+  const frankDocRef = doc(db, "users", uid);
+  try {
+    await updateDoc(frankDocRef, {
+      bio: getData.bio,
+      gender: getData.gender,
+      user_img: updateimage ? updateimage : currentUser.user_img,
+      username: getData.username,
+    });
+  } catch (error) {
+    console.log(error);
+  }
 };

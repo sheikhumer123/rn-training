@@ -3,9 +3,10 @@ import * as React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import Home from "../screens/Home";
-import CommentScreen from "../screens/Home";
+
 import Notification from "../components/Notification";
-import PrivacyAndSettings from "../components/PrivacyAndSettings";
+import EditProfileScreen from "../screens/EditProfileScreen";
+import OpenCommentsScreen from "../screens/OpenCommentsScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -13,31 +14,25 @@ const HomeNavigator = (props) => {
   return (
     <Stack.Navigator>
       <Stack.Screen
-        options={{
-          headerShown: false,
-        }}
+        options={{ headerShown: false }}
         name="Home"
         component={Home}
       />
+
       <Stack.Screen
         name="Notification"
         component={Notification}
-        options={{
-          headerTitleStyle: {
-            color: "red",
-            fontSize: 22,
-          },
-        }}
+        options={{ headerShown: false }}
       />
-
       <Stack.Screen
-        name="CommentScreen"
-        component={CommentScreen}
-        options={{
-          headerTitleStyle: {
-            headerShown: false,
-          },
-        }}
+        name="EditProfileScreen"
+        component={EditProfileScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="OpenCommentsScreen"
+        component={OpenCommentsScreen}
+        options={{ headerShown: false }}
       />
     </Stack.Navigator>
   );

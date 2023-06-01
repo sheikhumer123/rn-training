@@ -1,19 +1,16 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
-import { Button } from "react-native-elements";
+
 import { Avatar } from "@rneui/themed";
 
 const HighlightStories = () => {
   return (
     <View style={styles.discover_people_box}>
       <Avatar
-        size={65}
+        size={80}
         rounded
-        source={{
-          uri: "https://randomuser.me/api/portraits/men/10.jpg",
-        }}
+        source={require("../assets/images/add-img.png")}
       />
-
       <Text style={styles.discover_box_text}>New</Text>
     </View>
   );
