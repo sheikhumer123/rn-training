@@ -223,3 +223,21 @@ export const editUserDB = async (getData, uid, updateimage, currentUser) => {
     console.log(error);
   }
 };
+
+export const getAllUsersForSearch = async (searchText) => {
+  const startcode = searchText;
+  const endcode =
+    startcode.slice(0, -1) +
+    String.fromCharCode(startcode.slice(-1).charCodeAt(0) + 1);
+  const allData = [];
+  const q = query(
+    collection(db, "users"),
+    where("username", ">=", startcode),
+    where("username", "<", endcode)
+  );
+  const querySnapshot = await getDocs(q);
+  querySnapshot.forEach((doc) => {
+    allData.push(doc.data());
+  });
+  return allData;
+};

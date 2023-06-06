@@ -41,7 +41,7 @@ const UserDetails = () => {
     setLoading(true);
     let downloadUrl = await uploadUserDp();
     let userDetails = {
-      username: userName,
+      username: userName.toLowerCase(),
       user_img: downloadUrl,
       id: currentUser.uid,
     };

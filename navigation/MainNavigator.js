@@ -9,14 +9,16 @@ import ProfileAndSettingScreen from "../screens/ProfileAndSettingScreen";
 import ReelsVideosScreen from "../screens/ReelsVideosScreen";
 import MainContext from "../MainContext/MainContext";
 import { Avatar } from "@rneui/themed";
-
 import { AppProvider } from "../navigation/PostNavigator";
-
 import HomeNavigator from "./HomeNavigator";
 
 const MainNavigator = () => {
-  const { currentUser } = useContext(MainContext);
+  const { currentUser, setReset } = useContext(MainContext);
   const Tab = createBottomTabNavigator();
+
+  const handleChange = () => {
+    setReset((r) => r + 1);
+  };
 
   return (
     <>
@@ -41,6 +43,7 @@ const MainNavigator = () => {
           />
 
           <Tab.Screen
+            ontabPress={handleChange}
             options={{
               showLabel: false,
               tabBarIcon: ({ color, size }) => {
@@ -49,6 +52,7 @@ const MainNavigator = () => {
             }}
             name="SearchScreen"
             component={SearchScreen}
+            on
           />
           <Tab.Screen
             options={{

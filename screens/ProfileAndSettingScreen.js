@@ -37,7 +37,7 @@ const ProfileAndSettingScreen = (props) => {
 
   return (
     <SafeAreaView style={styles.setting_area}>
-      <ScrollView>
+      <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.profile_page_top_nav}>
           <View style={styles.top_nav_flex_1}>
             <Text style={styles.top_nav_email}>{currentUser.email}</Text>
@@ -132,10 +132,14 @@ const ProfileAndSettingScreen = (props) => {
         </View>
 
         <View style={styles.seciton_4_container}>
-          <Text>Discover people</Text>
+          {discoverBox ? <Text>Discover people</Text> : null}
+
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             <View style={styles.discover_boxes}>
-              <DiscoverBox />
+              <DiscoverBox
+                discoverBox={discoverBox}
+                setDiscoverBox={setDiscoverBox}
+              />
             </View>
           </ScrollView>
         </View>

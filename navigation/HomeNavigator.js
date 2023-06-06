@@ -7,6 +7,7 @@ import Home from "../screens/Home";
 import Notification from "../components/Notification";
 import EditProfileScreen from "../screens/EditProfileScreen";
 import OpenCommentsScreen from "../screens/OpenCommentsScreen";
+import ProfileScreen from "../screens/ProfileScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -32,6 +33,11 @@ const HomeNavigator = (props) => {
       <Stack.Screen
         name="OpenCommentsScreen"
         component={OpenCommentsScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="ProfileScreen"
+        component={ProfileScreen}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>
