@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   View,
   Text,
@@ -6,132 +6,171 @@ import {
   SafeAreaView,
   ScrollView,
   TouchableWithoutFeedback,
+  ActivityIndicator,
 } from "react-native";
-import { Avatar } from "@rneui/themed";
+import DiscoverBox from "../components/DiscoverBox";
+import MainContext from "../MainContext/MainContext";
 import Feather from "react-native-vector-icons/Feather";
+import { Avatar } from "@rneui/themed";
 import { app } from "../constants";
 import { Button } from "react-native-elements";
-import DiscoverBox from "../components/DiscoverBox";
 import { useNavigation } from "@react-navigation/native";
-import { getUserDB } from "../database";
+import {
+  getUserDB,
+  createFollowFollowing,
+  updateFollowFollowingCurrentUser,
+  updateFollowFollowingUser,
+  updateButtonFollow,
+} from "../database";
 
 const ProfileScreen = ({ route }) => {
+  const { currentUser, setCurrentuUser } = useContext(MainContext);
+
   const navigation = useNavigation();
   const { userId } = route.params;
   const [profile, setProfileData] = useState([]);
+  const [buttonText, setButtonText] = useState(false);
   const [discoverBox, setDiscoverBox] = useState(true);
-  const [loading, setLoading] = useState(false);
+  const [loading, setloading] = useState(false);
+  const [following] = useState({
+    id: userId,
+  });
+  const [follower] = useState({
+    id: currentUser.id,
+  });
 
   useEffect(() => {
-    setLoading(true);
+    const checkButtonSituation = async () => {
+      setloading(true);
+      const situation = await updateButtonFollow(userId, currentUser);
+      setButtonText(situation);
+      setloading(false);
+    };
     const fetchData = async () => {
+      setloading(true);
       const data = await getUserDB(userId);
       setProfileData(data);
-      console.log(data);
+      setloading(false);
     };
-
     fetchData();
-    setLoading(false);
+    checkButtonSituation();
   }, []);
+
+  const Follow = async () => {
+    if (buttonText === false) {
+      setButtonText(!buttonText);
+      await createFollowFollowing(currentUser.id, userId);
+    } else {
+      setButtonText(!buttonText);
+      await updateFollowFollowingCurrentUser(following, currentUser);
+      await updateFollowFollowingUser(follower, userId);
+    }
+  };
 
   return (
     <>
-      <SafeAreaView style={styles.setting_area}>
-        <ScrollView showsVerticalScrollIndicator={false}>
-          <View style={styles.profile_page_top_nav}>
-            <View style={styles.top_nav_flex_2}>
-              <TouchableWithoutFeedback>
-                <Feather
-                  onPress={() => navigation.navigate("Home")}
-                  name="arrow-left"
-                  size={23}
-                  color="black"
+      {loading ? (
+        <View style={{ flex: 1, ...app.styles.center_view }}>
+          <ActivityIndicator animating={loading} size="small" color="#0000ff" />
+        </View>
+      ) : (
+        <SafeAreaView style={styles.setting_area}>
+          <ScrollView showsVerticalScrollIndicator={false}>
+            <View style={styles.profile_page_top_nav}>
+              <View style={styles.top_nav_flex_2}>
+                <TouchableWithoutFeedback>
+                  <Feather
+                    onPress={() => navigation.navigate("Home")}
+                    name="arrow-left"
+                    size={23}
+                    color="black"
+                  />
+                </TouchableWithoutFeedback>
+              </View>
+              <View style={styles.top_nav_flex_1}>
+                <Text style={styles.top_nav_email}>sadasdasd@gmail.com</Text>
+              </View>
+              <View style={styles.top_nav_flex}>
+                <TouchableWithoutFeedback
+                  onPress={() => setModalVisible((q) => !q)}
+                >
+                  <Feather name="menu" size={23} color="black" />
+                </TouchableWithoutFeedback>
+              </View>
+            </View>
+            <View style={styles.section_1_container}>
+              <View style={styles.profile_page_section_1}>
+                <Avatar
+                  size={80}
+                  rounded
+                  source={{
+                    uri: profile.user_img,
+                  }}
                 />
-              </TouchableWithoutFeedback>
+                <View style={styles.section_1_text}>
+                  <Text style={app.styles.center_text}>1</Text>
+                  <Text style={app.styles.center_text}>Posts</Text>
+                </View>
+                <View style={styles.section_1_text}>
+                  <Text style={app.styles.center_text}>29</Text>
+                  <Text style={app.styles.center_text}>Followers</Text>
+                </View>
+                <View style={styles.section_1_text}>
+                  <Text style={app.styles.center_text}>15</Text>
+                  <Text style={app.styles.center_text}>Following</Text>
+                </View>
+              </View>
             </View>
-            <View style={styles.top_nav_flex_1}>
-              <Text style={styles.top_nav_email}>sadasdasd@gmail.com</Text>
+            <View style={styles.section_2_container}>
+              <Text>{profile.username}</Text>
+              <Text>{profile.bio}</Text>
             </View>
-            <View style={styles.top_nav_flex}>
-              <TouchableWithoutFeedback
-                onPress={() => setModalVisible((q) => !q)}
+            <View style={styles.section_3_container}>
+              <View style={styles.profile_screen_buttons}>
+                <Button
+                  onPress={Follow}
+                  buttonStyle={{
+                    backgroundColor: "dodgerblue",
+                  }}
+                  containerStyle={{
+                    width: "100%",
+                    height: 33,
+                  }}
+                  titleStyle={{
+                    fontSize: 13,
+                    color: "white",
+                    fontWeight: "600",
+                  }}
+                  title={buttonText ? "UnFollow" : "Follow"}
+                />
+              </View>
+            </View>
+            <View style={styles.seciton_4_container}>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                }}
               >
-                <Feather name="menu" size={23} color="black" />
-              </TouchableWithoutFeedback>
-            </View>
-          </View>
-          <View style={styles.section_1_container}>
-            <View style={styles.profile_page_section_1}>
-              <Avatar
-                size={80}
-                rounded
-                source={{
-                  uri: profile.user_img,
-                }}
-              />
-              <View style={styles.section_1_text}>
-                <Text style={app.styles.center_text}>1</Text>
-                <Text style={app.styles.center_text}>Posts</Text>
+                <Text>Suggested for you</Text>
+                <TouchableWithoutFeedback>
+                  <Text style={{ color: "dodgerblue", fontWeight: "bold" }}>
+                    Sell all
+                  </Text>
+                </TouchableWithoutFeedback>
               </View>
-              <View style={styles.section_1_text}>
-                <Text style={app.styles.center_text}>29</Text>
-                <Text style={app.styles.center_text}>Followers</Text>
-              </View>
-              <View style={styles.section_1_text}>
-                <Text style={app.styles.center_text}>15</Text>
-                <Text style={app.styles.center_text}>Following</Text>
-              </View>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                <View style={styles.discover_boxes}>
+                  <DiscoverBox
+                    discoverBox={discoverBox}
+                    setDiscoverBox={setDiscoverBox}
+                  />
+                </View>
+              </ScrollView>
             </View>
-          </View>
-          <View style={styles.section_2_container}>
-            <Text>{profile.username}</Text>
-            <Text>{profile.bio}</Text>
-          </View>
-          <View style={styles.section_3_container}>
-            <View style={styles.profile_screen_buttons}>
-              <Button
-                onPress={() => navigation.navigate("EditProfileScreen")}
-                buttonStyle={{
-                  backgroundColor: "dodgerblue",
-                }}
-                containerStyle={{
-                  width: "100%",
-                  height: 33,
-                }}
-                titleStyle={{
-                  fontSize: 13,
-                  color: "white",
-                  fontWeight: "600",
-                }}
-                title={"Follow back"}
-              />
-            </View>
-          </View>
-          <View style={styles.seciton_4_container}>
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-              }}
-            >
-              <Text>Suggested for you</Text>
-              <TouchableWithoutFeedback>
-                <Text style={{ color: "dodgerblue", fontWeight: "bold" }}>
-                  Sell all
-                </Text>
-              </TouchableWithoutFeedback>
-            </View>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              <View style={styles.discover_boxes}>
-                <DiscoverBox
-                  discoverBox={discoverBox}
-                  setDiscoverBox={setDiscoverBox}
-                />
-              </View>
-            </ScrollView>
-          </View>
-        </ScrollView>
-      </SafeAreaView>
+          </ScrollView>
+        </SafeAreaView>
+      )}
     </>
   );
 };

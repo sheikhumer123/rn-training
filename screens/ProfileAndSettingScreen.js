@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -8,25 +8,28 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 import { Avatar } from "@rneui/themed";
+import { app } from "../constants";
+import { getAuth, signOut } from "firebase/auth";
+import { Button } from "react-native-elements";
+import { useNavigation } from "@react-navigation/native";
+import { getUserPosts } from "../database";
 
 import Feather from "react-native-vector-icons/Feather";
-import MainContext from "../MainContext/MainContext";
-import { getAuth, signOut } from "firebase/auth";
-
-import { app } from "../constants";
-import { Button } from "react-native-elements";
 import DiscoverBox from "../components/DiscoverBox";
+import MainContext from "../MainContext/MainContext";
 import HighlightStories from "../components/HighlightStories";
 import ProfileTabNavigator from "../navigation/ProfileTabNavigator";
 import SettingModal from "../components/SettingModal";
 import AccountSwitchModal from "../components/AccountSwicthModal";
 import CreateModal from "../components/CreateModal";
-import { useNavigation } from "@react-navigation/native";
 
 const ProfileAndSettingScreen = (props) => {
   const navigation = useNavigation();
   const [isModalVisible, setModalVisible] = useState(false);
   const [createModal, setCreateModal] = useState(false);
+  const [postLength, setPostLength] = useState("");
+  const [followersLength, setFollowersLength] = useState("");
+  const [followingLength, setFollowingLength] = useState("");
   const [AccountModal, setAccountModal] = useState(false);
   const { setCurrentUser, currentUser } = useContext(MainContext);
   const [discoverBox, setDiscoverBox] = useState(true);
@@ -34,6 +37,21 @@ const ProfileAndSettingScreen = (props) => {
   const discoverBoxToggle = () => {
     setDiscoverBox(!discoverBox);
   };
+
+  const getPostLength = async () => {
+    const posts = await getUserPosts(currentUser.id);
+    setPostLength(posts.length);
+  };
+
+  useEffect(() => {
+    getPostLength();
+    // setFollowingLength(currentUser.following.length);
+    // if (currentUser.hasOwnProperty("followers")) {
+    //   setFollowersLength(currentUser.followers.length);
+    // } else {
+    //   setFollowersLength("0");
+    // }
+  }, []);
 
   return (
     <SafeAreaView style={styles.setting_area}>
@@ -72,15 +90,15 @@ const ProfileAndSettingScreen = (props) => {
               }}
             />
             <View style={styles.section_1_text}>
-              <Text style={app.styles.center_text}>1</Text>
+              <Text style={app.styles.center_text}>0</Text>
               <Text style={app.styles.center_text}>Posts</Text>
             </View>
             <View style={styles.section_1_text}>
-              <Text style={app.styles.center_text}>29</Text>
+              <Text style={app.styles.center_text}>0</Text>
               <Text style={app.styles.center_text}>Followers</Text>
             </View>
             <View style={styles.section_1_text}>
-              <Text style={app.styles.center_text}>15</Text>
+              <Text style={app.styles.center_text}>0</Text>
               <Text style={app.styles.center_text}>Following</Text>
             </View>
           </View>

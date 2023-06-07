@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   View,
   Text,
@@ -8,9 +8,14 @@ import {
   ScrollView,
 } from "react-native";
 import { Avatar } from "@rneui/themed";
-import { Button } from "@rneui/base";
+import { test } from "../database";
+import MainContext from "../MainContext/MainContext";
 
 const Notification = (props) => {
+  const { currentUser } = useContext(MainContext);
+  useEffect(() => {
+    test(currentUser.id);
+  }, []);
   const { onPress, title = "Follow" } = props;
   return (
     <SafeAreaView style={styles.notification_bar}>
@@ -46,7 +51,7 @@ export default Notification;
 
 const styles = StyleSheet.create({
   notification_bar: {
-    paddingTop: 10,
+    paddingTop: 40,
     paddingHorizontal: 10,
     flex: 1,
   },

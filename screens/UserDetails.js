@@ -44,12 +44,16 @@ const UserDetails = () => {
       username: userName.toLowerCase(),
       user_img: downloadUrl,
       id: currentUser.uid,
+      followers: [],
+      following: [],
     };
     await createUserDB(userDetails, currentUser.uid);
     setCurrentUser({
       ...currentUser,
       username: userName,
       user_img: downloadUrl,
+      followers: [],
+      following: [],
     });
     setLoading(false);
   };

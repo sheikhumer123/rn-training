@@ -16,6 +16,7 @@ import {
   where,
   updateDoc,
   arrayUnion,
+  onSnapshot,
 } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import "react-native-get-random-values";
@@ -109,13 +110,13 @@ export const commented = async ({ postID, comment }) => {
   const querySnapshot = await getDocs(q);
   querySnapshot.forEach(async (doc) => {
     const postId = doc.id;
-    const comments = doc.data().comments || []; // Get the existing comments or initialize an empty array
-    const newComment = comment; // Example comment object, replace with your own logic
-    comments.push(newComment); // Push the new comment into the comments array
+    const comments = doc.data().comments || [];
+    const newComment = comment;
+    comments.push(newComment);
     try {
       await updateDoc(doc.ref, {
         comments: arrayUnion(newComment),
-      }); // Update the comments field in Firestore
+      });
     } catch (error) {
       console.error("Error adding comment:", error);
     }
@@ -139,7 +140,6 @@ export const likeFunction = async ({ currentUser, like, post }) => {
   );
   const querySnapshot = await getDocs(q);
   const updatePromises = []; // Array to store update promises
-
   for (const doc of querySnapshot.docs) {
     const likes = doc.data().likes || []; // Get the existing likes or initialize an empty array
     const existingLikeIndex = likes.findIndex(
@@ -170,7 +170,6 @@ export const getLikesLength = async (postId) => {
 
 export const getUserPosts = async (userID) => {
   const posts = [];
-
   const q = query(collection(db, "posts"), where("id", "==", userID));
   const querySnapshot = await getDocs(q);
   querySnapshot.forEach((doc) => {
@@ -240,4 +239,84 @@ export const getAllUsersForSearch = async (searchText) => {
     allData.push(doc.data());
   });
   return allData;
+};
+export const createFollowFollowing = async (user_1, user_2) => {
+  const user1DocRef = doc(db, "users", user_1);
+  const user2DocRef = doc(db, "users", user_2);
+  await updateDoc(user1DocRef, {
+    following: arrayUnion(user_2),
+  });
+  await updateDoc(user2DocRef, {
+    followers: arrayUnion(user_1),
+  });
+};
+
+export const updateFollowFollowingCurrentUser = async (
+  following,
+  currentUser
+) => {
+  const currentUserDocRef = doc(db, "users", currentUser.id);
+  try {
+    const currentUserDocSnapshot = await getDoc(currentUserDocRef);
+    const currentUserData = currentUserDocSnapshot.data();
+    const followingArray = currentUserData.following || [];
+    const index = followingArray.findIndex((item) => item.id === following.id);
+    if (index == -1) {
+      followingArray.splice(index, 1);
+    } else {
+    }
+    await updateDoc(currentUserDocRef, {
+      following: followingArray,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const updateFollowFollowingUser = async (follower, uid) => {
+  const currentUserDocRef = doc(db, "users", uid);
+  try {
+    const currentUserDocSnapshot = await getDoc(currentUserDocRef);
+    const currentUserData = currentUserDocSnapshot.data();
+    const followingArray = currentUserData.followers || [];
+    const index = followingArray.findIndex((item) => item.id === follower.id);
+    if (index == -1) {
+      followingArray.splice(index, 1);
+    } else {
+    }
+    await updateDoc(currentUserDocRef, {
+      followers: followingArray,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const updateButtonFollow = async (userId, currentUser) => {
+  const currentUserDocRef = doc(db, "users", userId);
+  try {
+    const currentUserDocSnapshot = await getDoc(currentUserDocRef);
+    const currentUserData = currentUserDocSnapshot.data();
+    const followingArray = currentUserData.followers;
+    if (followingArray.includes(currentUser.id)) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const MasonryListPosts = async () => {
+  let posts = [];
+  const querySnapshot = await getDocs(collection(db, "posts"));
+  querySnapshot.forEach((doc) => {
+    const postData = doc.data();
+    const imgUrl = postData.img;
+    const postID = postData.post_id;
+    const postObject = { imgUrl, postID };
+    posts.push(postObject);
+  });
+  return posts;
 };

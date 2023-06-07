@@ -13,12 +13,8 @@ import { AppProvider } from "../navigation/PostNavigator";
 import HomeNavigator from "./HomeNavigator";
 
 const MainNavigator = () => {
-  const { currentUser, setReset } = useContext(MainContext);
+  const { currentUser } = useContext(MainContext);
   const Tab = createBottomTabNavigator();
-
-  const handleChange = () => {
-    setReset((r) => r + 1);
-  };
 
   return (
     <>
@@ -43,7 +39,6 @@ const MainNavigator = () => {
           />
 
           <Tab.Screen
-            ontabPress={handleChange}
             options={{
               showLabel: false,
               tabBarIcon: ({ color, size }) => {
