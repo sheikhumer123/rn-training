@@ -5,15 +5,14 @@ import { getUserDB } from "../database";
 
 const MainContext = React.createContext();
 export const MainProvider = ({ children }) => {
+  const [reset, setReset] = useState("");
   const [appLoad, setAppLoad] = useState(true);
   const [currentUser, setCurrentUser] = useState({});
   useEffect(() => {
     const auth = getAuth();
     const unsubscriber = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        // Firestore call to get user from uid and set username and userIm from that input
         let data = (await getUserDB(user.uid)) || {};
-
         const { email, uid } = user;
         setCurrentUser({ email, uid, ...data });
       }
@@ -23,7 +22,9 @@ export const MainProvider = ({ children }) => {
   }, []);
 
   return (
-    <MainContext.Provider value={{ currentUser, setCurrentUser, appLoad }}>
+    <MainContext.Provider
+      value={{ currentUser, setCurrentUser, appLoad, reset, setReset }}
+    >
       {children}
     </MainContext.Provider>
   );

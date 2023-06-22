@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -8,25 +8,28 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 import { Avatar } from "@rneui/themed";
+import { app } from "../constants";
+import { getAuth, signOut } from "firebase/auth";
+import { Button } from "react-native-elements";
+import { useNavigation } from "@react-navigation/native";
+import { getUserPosts } from "../database";
 
 import Feather from "react-native-vector-icons/Feather";
-import MainContext from "../MainContext/MainContext";
-import { getAuth, signOut } from "firebase/auth";
-
-import { app } from "../constants";
-import { Button } from "react-native-elements";
 import DiscoverBox from "../components/DiscoverBox";
+import MainContext from "../MainContext/MainContext";
 import HighlightStories from "../components/HighlightStories";
 import ProfileTabNavigator from "../navigation/ProfileTabNavigator";
 import SettingModal from "../components/SettingModal";
 import AccountSwitchModal from "../components/AccountSwicthModal";
 import CreateModal from "../components/CreateModal";
-import { useNavigation } from "@react-navigation/native";
 
 const ProfileAndSettingScreen = (props) => {
   const navigation = useNavigation();
   const [isModalVisible, setModalVisible] = useState(false);
   const [createModal, setCreateModal] = useState(false);
+  const [postLength, setPostLength] = useState("");
+  const [followersLength, setFollowersLength] = useState("");
+  const [followingLength, setFollowingLength] = useState("");
   const [AccountModal, setAccountModal] = useState(false);
   const { setCurrentUser, currentUser } = useContext(MainContext);
   const [discoverBox, setDiscoverBox] = useState(true);
@@ -35,9 +38,20 @@ const ProfileAndSettingScreen = (props) => {
     setDiscoverBox(!discoverBox);
   };
 
+  const getPostLength = async () => {
+    const posts = await getUserPosts(currentUser.id);
+    setPostLength(posts.length);
+  };
+
+  useEffect(() => {
+    getPostLength();
+    setFollowingLength(currentUser.following.length);
+    setFollowersLength(currentUser.followers.length);
+  }, []);
+
   return (
     <SafeAreaView style={styles.setting_area}>
-      <ScrollView>
+      <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.profile_page_top_nav}>
           <View style={styles.top_nav_flex_1}>
             <Text style={styles.top_nav_email}>{currentUser.email}</Text>
@@ -72,15 +86,15 @@ const ProfileAndSettingScreen = (props) => {
               }}
             />
             <View style={styles.section_1_text}>
-              <Text style={app.styles.center_text}>1</Text>
+              <Text style={app.styles.center_text}>{postLength}</Text>
               <Text style={app.styles.center_text}>Posts</Text>
             </View>
             <View style={styles.section_1_text}>
-              <Text style={app.styles.center_text}>29</Text>
+              <Text style={app.styles.center_text}>{followersLength}</Text>
               <Text style={app.styles.center_text}>Followers</Text>
             </View>
             <View style={styles.section_1_text}>
-              <Text style={app.styles.center_text}>15</Text>
+              <Text style={app.styles.center_text}>{followingLength}</Text>
               <Text style={app.styles.center_text}>Following</Text>
             </View>
           </View>
@@ -132,10 +146,14 @@ const ProfileAndSettingScreen = (props) => {
         </View>
 
         <View style={styles.seciton_4_container}>
-          <Text>Discover people</Text>
+          {discoverBox ? <Text>Discover people</Text> : null}
+
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             <View style={styles.discover_boxes}>
-              <DiscoverBox />
+              <DiscoverBox
+                discoverBox={discoverBox}
+                setDiscoverBox={setDiscoverBox}
+              />
             </View>
           </ScrollView>
         </View>

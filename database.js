@@ -16,6 +16,8 @@ import {
   where,
   updateDoc,
   arrayUnion,
+  addDoc,
+  arrayRemove,
 } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import "react-native-get-random-values";
@@ -54,8 +56,7 @@ export const createUserDB = async (userDetails, uid) => {
 export const getUserDB = async (uid) => {
   const docRef = doc(db, "users", uid);
   const docSnap = await getDoc(docRef);
-
-  if (docSnap.exists()) {
+    if (docSnap.exists()) {
     const data = docSnap.data();
     return data;
   } else {
@@ -109,13 +110,13 @@ export const commented = async ({ postID, comment }) => {
   const querySnapshot = await getDocs(q);
   querySnapshot.forEach(async (doc) => {
     const postId = doc.id;
-    const comments = doc.data().comments || []; // Get the existing comments or initialize an empty array
-    const newComment = comment; // Example comment object, replace with your own logic
-    comments.push(newComment); // Push the new comment into the comments array
+    const comments = doc.data().comments || [];
+    const newComment = comment;
+    comments.push(newComment);
     try {
       await updateDoc(doc.ref, {
         comments: arrayUnion(newComment),
-      }); // Update the comments field in Firestore
+      });
     } catch (error) {
       console.error("Error adding comment:", error);
     }
@@ -138,22 +139,21 @@ export const likeFunction = async ({ currentUser, like, post }) => {
     where("post_id", "==", post.post_id)
   );
   const querySnapshot = await getDocs(q);
-  const updatePromises = []; // Array to store update promises
-
+  const updatePromises = []; 
   for (const doc of querySnapshot.docs) {
-    const likes = doc.data().likes || []; // Get the existing likes or initialize an empty array
+    const likes = doc.data().likes || []; /
     const existingLikeIndex = likes.findIndex(
       (l) => l.user_id === currentUser.uid
-    ); // Find the index of the existing like with the same user_id
+    ); 
     if (existingLikeIndex !== -1) {
-      likes.splice(existingLikeIndex, 1); // Remove the existing like with the same user_id
+      likes.splice(existingLikeIndex, 1); 
     } else {
-      likes.push(like); // Add the new like to the likes array
+      likes.push(like); 
     }
     const updatePromise = updateDoc(doc.ref, { likes: likes });
-    updatePromises.push(updatePromise); // Add the update promise to the array
+    updatePromises.push(updatePromise); 
   }
-  // Wait for all update promises to complete
+
   await Promise.all(updatePromises);
 };
 
@@ -170,7 +170,6 @@ export const getLikesLength = async (postId) => {
 
 export const getUserPosts = async (userID) => {
   const posts = [];
-
   const q = query(collection(db, "posts"), where("id", "==", userID));
   const querySnapshot = await getDocs(q);
   querySnapshot.forEach((doc) => {
@@ -222,4 +221,94 @@ export const editUserDB = async (getData, uid, updateimage, currentUser) => {
   } catch (error) {
     console.log(error);
   }
+};
+
+export const getAllUsersForSearch = async (searchText) => {
+  const startcode = searchText;
+  const endcode =
+    startcode.slice(0, -1) +
+    String.fromCharCode(startcode.slice(-1).charCodeAt(0) + 1);
+  const allData = [];
+  const q = query(
+    collection(db, "users"),
+    where("username", ">=", startcode),
+    where("username", "<", endcode)
+  );
+  const querySnapshot = await getDocs(q);
+  querySnapshot.forEach((doc) => {
+    allData.push(doc.data());
+  });
+  return allData;
+};
+export const createFollowFollowing = async (user_1, user_2) => {
+  const user1DocRef = doc(db, "users", user_1);
+  const user2DocRef = doc(db, "users", user_2);
+  await updateDoc(user1DocRef, {
+    following: arrayUnion(user_2),
+  });
+  await updateDoc(user2DocRef, {
+    followers: arrayUnion(user_1),
+  });
+};
+
+export const getUserArray = async (id) => {
+  const docRef = doc(db, "users", id);
+  const docSnap = await getDoc(docRef);
+  if (docSnap.exists()) {
+    return docSnap.data();
+  } else {
+    console.log("No such document!");
+  }
+};
+
+export const removeFollowFollowing = async (user_1, user_2) => {
+  const user1DocRef = doc(db, "users", user_1);
+  const user2DocRef = doc(db, "users", user_2);
+  await updateDoc(user1DocRef, {
+    following: arrayRemove(user_2),
+  });
+  await updateDoc(user2DocRef, {
+    followers: arrayRemove(user_1),
+  });
+};
+
+export const MasonryListPosts = async () => {
+  let posts = [];
+  const querySnapshot = await getDocs(collection(db, "posts"));
+  querySnapshot.forEach((doc) => {
+    const postData = doc.data();
+    const imgUrl = postData.img;
+    const postID = postData.post_id;
+    const postObject = { imgUrl, postID };
+    posts.push(postObject);
+  });
+  return posts;
+};
+
+export const notify = async (
+  user_1,
+  usertitle,
+  img,
+  descriptionnotify,
+  byUserID
+) => {
+  const docRef = await addDoc(collection(db, "notifications"), {
+    by_user: usertitle,
+    user_id: user_1,
+    description: descriptionnotify,
+    img: img,
+    by_user_id: byUserID,
+    time: Date(),
+  });
+};
+
+export const getUsernotify = async (id) => {
+  let notifications = [];
+  const q = query(collection(db, "notifications"), where("user_id", "==", id));
+  const querySnapshot = await getDocs(q);
+  querySnapshot.forEach((doc) => {
+    notifications.push(doc.data());
+  });
+
+  return notifications;
 };

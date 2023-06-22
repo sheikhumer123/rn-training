@@ -39,17 +39,25 @@ const UserDetails = () => {
   };
   const uploadUserDetail = async () => {
     setLoading(true);
-    let downloadUrl = await uploadUserDp();
+    let downloadUrl = image
+      ? await uploadUserDp()
+      : "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8dXNlcnxlbnwwfHwwfHx8MA%3D%3D&w=1000&q=80";
+    console.log(downloadUrl);
+
     let userDetails = {
-      username: userName,
+      username: userName.toLowerCase(),
       user_img: downloadUrl,
       id: currentUser.uid,
+      followers: [],
+      following: [],
     };
     await createUserDB(userDetails, currentUser.uid);
     setCurrentUser({
       ...currentUser,
       username: userName,
       user_img: downloadUrl,
+      followers: [],
+      following: [],
     });
     setLoading(false);
   };

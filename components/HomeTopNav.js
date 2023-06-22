@@ -7,7 +7,6 @@ import {
 } from "react-native";
 import { Icon } from "@rneui/base";
 import { useNavigation } from "@react-navigation/native";
-
 import Logo from "./Logo";
 
 const HomeTopNav = () => {

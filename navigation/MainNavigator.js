@@ -9,9 +9,7 @@ import ProfileAndSettingScreen from "../screens/ProfileAndSettingScreen";
 import ReelsVideosScreen from "../screens/ReelsVideosScreen";
 import MainContext from "../MainContext/MainContext";
 import { Avatar } from "@rneui/themed";
-
 import { AppProvider } from "../navigation/PostNavigator";
-
 import HomeNavigator from "./HomeNavigator";
 
 const MainNavigator = () => {
@@ -49,6 +47,7 @@ const MainNavigator = () => {
             }}
             name="SearchScreen"
             component={SearchScreen}
+            on
           />
           <Tab.Screen
             options={{

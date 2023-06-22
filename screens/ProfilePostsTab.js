@@ -13,7 +13,6 @@ const ProfilePostsTab = () => {
   useFocusEffect(
     React.useCallback(() => {
       fetchUserPosts();
-
       return () => {};
     }, [])
   );
@@ -68,7 +67,7 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     flexWrap: "wrap",
-    justifyContent: "space-between",
+
     flex: 1,
   },
   user_profile_posts: {
@@ -79,7 +78,7 @@ const styles = StyleSheet.create({
   user_posts_test: {},
   postImage: {
     height: 100,
-    width: 120,
+    width: 110,
     marginTop: 5,
   },
   profile_post_loading_container: {

@@ -12,7 +12,7 @@ import CommentBox from "./CommentBox";
 import moment from "moment";
 
 import MainContext from "../MainContext/MainContext";
-import { likeFunction, getLikesLength, getComments } from "../database";
+import { likeFunction, getLikesLength } from "../database";
 
 const Post = ({ post }) => {
   const commentInputRef = useRef(null);
