@@ -47,7 +47,6 @@ const MainNavigator = () => {
             }}
             name="SearchScreen"
             component={SearchScreen}
-            on
           />
           <Tab.Screen
             options={{

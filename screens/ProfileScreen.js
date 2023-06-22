@@ -51,7 +51,7 @@ const ProfileScreen = ({ route }) => {
     setPostLength(posts.length);
   };
 
-  const Follow = async () => {
+  const follow = async () => {
     if (currentUser.following.includes(userId)) {
       setCurrentUser({
         ...currentUser,

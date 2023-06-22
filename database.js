@@ -272,7 +272,7 @@ export const removeFollowFollowing = async (user_1, user_2) => {
   });
 };
 
-export const MasonryListPosts = async () => {
+export const masonryListPosts = async () => {
   let posts = [];
   const querySnapshot = await getDocs(collection(db, "posts"));
   querySnapshot.forEach((doc) => {

@@ -14,7 +14,7 @@ import MainContext from "../MainContext/MainContext";
 import { getAllUsersForSearch } from "../database";
 import { useNavigation } from "@react-navigation/native";
 import { Avatar } from "@rneui/themed";
-import { MasonryListPosts } from "../database";
+import { masonryListPosts } from "../database";
 
 const SearchScreen = ({}) => {
   const { currentUser } = useContext(MainContext);
@@ -33,7 +33,7 @@ const SearchScreen = ({}) => {
   };
   useEffect(() => {
     const getPost = async () => {
-      const data = await MasonryListPosts();
+      const data = await masonryListPosts();
       const imgUrls = data.map((post) => post.imgUrl);
     };
     getPost();
