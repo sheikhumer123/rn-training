@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Button, Icon } from "react-native-elements";
 import { Avatar } from "@rneui/themed";
 import { getAllUsers } from "../database";
 import FollowButton from "./FollowButton";
+import MainContext from "../MainContext/MainContext";
 
 const DiscoverBox = ({ discoverBox, setDiscoverBox }) => {
+  const { currentUser } = useContext(MainContext);
   const [allUsersData, setAllUsersData] = useState([]);
   const [removedBoxes, setRemovedBoxes] = useState([]);
 
@@ -22,7 +24,10 @@ const DiscoverBox = ({ discoverBox, setDiscoverBox }) => {
 
   const getAllUserInfo = async () => {
     const data = await getAllUsers();
-    setAllUsersData(data);
+    const filteredData = data.filter(
+      (obj) => obj.username !== currentUser.username
+    );
+    setAllUsersData(filteredData);
   };
 
   return (

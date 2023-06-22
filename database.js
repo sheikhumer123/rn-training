@@ -16,7 +16,8 @@ import {
   where,
   updateDoc,
   arrayUnion,
-  onSnapshot,
+  addDoc,
+  arrayRemove,
 } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import "react-native-get-random-values";
@@ -55,8 +56,7 @@ export const createUserDB = async (userDetails, uid) => {
 export const getUserDB = async (uid) => {
   const docRef = doc(db, "users", uid);
   const docSnap = await getDoc(docRef);
-
-  if (docSnap.exists()) {
+    if (docSnap.exists()) {
     const data = docSnap.data();
     return data;
   } else {
@@ -139,21 +139,21 @@ export const likeFunction = async ({ currentUser, like, post }) => {
     where("post_id", "==", post.post_id)
   );
   const querySnapshot = await getDocs(q);
-  const updatePromises = []; // Array to store update promises
+  const updatePromises = []; 
   for (const doc of querySnapshot.docs) {
-    const likes = doc.data().likes || []; // Get the existing likes or initialize an empty array
+    const likes = doc.data().likes || []; /
     const existingLikeIndex = likes.findIndex(
       (l) => l.user_id === currentUser.uid
-    ); // Find the index of the existing like with the same user_id
+    ); 
     if (existingLikeIndex !== -1) {
-      likes.splice(existingLikeIndex, 1); // Remove the existing like with the same user_id
+      likes.splice(existingLikeIndex, 1); 
     } else {
-      likes.push(like); // Add the new like to the likes array
+      likes.push(like); 
     }
     const updatePromise = updateDoc(doc.ref, { likes: likes });
-    updatePromises.push(updatePromise); // Add the update promise to the array
+    updatePromises.push(updatePromise); 
   }
-  // Wait for all update promises to complete
+
   await Promise.all(updatePromises);
 };
 
@@ -251,61 +251,25 @@ export const createFollowFollowing = async (user_1, user_2) => {
   });
 };
 
-export const updateFollowFollowingCurrentUser = async (
-  following,
-  currentUser
-) => {
-  const currentUserDocRef = doc(db, "users", currentUser.id);
-  try {
-    const currentUserDocSnapshot = await getDoc(currentUserDocRef);
-    const currentUserData = currentUserDocSnapshot.data();
-    const followingArray = currentUserData.following || [];
-    const index = followingArray.findIndex((item) => item.id === following.id);
-    if (index == -1) {
-      followingArray.splice(index, 1);
-    } else {
-    }
-    await updateDoc(currentUserDocRef, {
-      following: followingArray,
-    });
-  } catch (error) {
-    console.log(error);
+export const getUserArray = async (id) => {
+  const docRef = doc(db, "users", id);
+  const docSnap = await getDoc(docRef);
+  if (docSnap.exists()) {
+    return docSnap.data();
+  } else {
+    console.log("No such document!");
   }
 };
 
-export const updateFollowFollowingUser = async (follower, uid) => {
-  const currentUserDocRef = doc(db, "users", uid);
-  try {
-    const currentUserDocSnapshot = await getDoc(currentUserDocRef);
-    const currentUserData = currentUserDocSnapshot.data();
-    const followingArray = currentUserData.followers || [];
-    const index = followingArray.findIndex((item) => item.id === follower.id);
-    if (index == -1) {
-      followingArray.splice(index, 1);
-    } else {
-    }
-    await updateDoc(currentUserDocRef, {
-      followers: followingArray,
-    });
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-export const updateButtonFollow = async (userId, currentUser) => {
-  const currentUserDocRef = doc(db, "users", userId);
-  try {
-    const currentUserDocSnapshot = await getDoc(currentUserDocRef);
-    const currentUserData = currentUserDocSnapshot.data();
-    const followingArray = currentUserData.followers;
-    if (followingArray.includes(currentUser.id)) {
-      return true;
-    } else {
-      return false;
-    }
-  } catch (error) {
-    console.log(error);
-  }
+export const removeFollowFollowing = async (user_1, user_2) => {
+  const user1DocRef = doc(db, "users", user_1);
+  const user2DocRef = doc(db, "users", user_2);
+  await updateDoc(user1DocRef, {
+    following: arrayRemove(user_2),
+  });
+  await updateDoc(user2DocRef, {
+    followers: arrayRemove(user_1),
+  });
 };
 
 export const MasonryListPosts = async () => {
@@ -319,4 +283,32 @@ export const MasonryListPosts = async () => {
     posts.push(postObject);
   });
   return posts;
+};
+
+export const notify = async (
+  user_1,
+  usertitle,
+  img,
+  descriptionnotify,
+  byUserID
+) => {
+  const docRef = await addDoc(collection(db, "notifications"), {
+    by_user: usertitle,
+    user_id: user_1,
+    description: descriptionnotify,
+    img: img,
+    by_user_id: byUserID,
+    time: Date(),
+  });
+};
+
+export const getUsernotify = async (id) => {
+  let notifications = [];
+  const q = query(collection(db, "notifications"), where("user_id", "==", id));
+  const querySnapshot = await getDocs(q);
+  querySnapshot.forEach((doc) => {
+    notifications.push(doc.data());
+  });
+
+  return notifications;
 };

@@ -12,9 +12,7 @@ export const MainProvider = ({ children }) => {
     const auth = getAuth();
     const unsubscriber = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        // Firestore call to get user from uid and set username and userIm from that input
         let data = (await getUserDB(user.uid)) || {};
-
         const { email, uid } = user;
         setCurrentUser({ email, uid, ...data });
       }

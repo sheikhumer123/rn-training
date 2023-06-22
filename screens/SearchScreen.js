@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import {
   View,
   StyleSheet,
@@ -6,36 +6,44 @@ import {
   Text,
   TouchableWithoutFeedback,
   ScrollView,
-  u,
 } from "react-native";
 
 import Feather from "react-native-vector-icons/Feather";
-import MasonryList from "react-native-masonry-list";
+import MainContext from "../MainContext/MainContext";
+
 import { getAllUsersForSearch } from "../database";
 import { useNavigation } from "@react-navigation/native";
 import { Avatar } from "@rneui/themed";
 import { MasonryListPosts } from "../database";
 
 const SearchScreen = ({}) => {
+  const { currentUser } = useContext(MainContext);
   const navigation = useNavigation();
   const [searchText, setSearchText] = useState("");
   const [searchResults, setSearchResults] = useState([]);
-  const [masonryPosts, setMasonryPosts] = useState([]);
+
   const searchData = async (text) => {
     setSearchText(text);
     const lowercaseText = text.toLowerCase();
     const data = await getAllUsersForSearch(lowercaseText);
-    setSearchResults(data);
+    const filteredData = data.filter(
+      (obj) => obj.username !== currentUser.username
+    );
+    setSearchResults(filteredData);
   };
-
   useEffect(() => {
     const getPost = async () => {
       const data = await MasonryListPosts();
       const imgUrls = data.map((post) => post.imgUrl);
-      setMasonryPosts(imgUrls);
     };
     getPost();
   }, []);
+
+  const navigator = () => {
+    setSearchText("");
+    setSearchResults([]);
+    navigation.navigate("Home");
+  };
 
   return (
     <>
@@ -50,9 +58,7 @@ const SearchScreen = ({}) => {
           <View style={{ flexDirection: "row" }}>
             <View style={{ flex: 0.1 }}>
               <Feather
-                onPress={() => {
-                  navigation.navigate("Home");
-                }}
+                onPress={navigator}
                 style={{
                   position: "absolute",
                   top: 8,
@@ -82,23 +88,16 @@ const SearchScreen = ({}) => {
               />
             </View>
           </View>
-          <View>
-            {searchText.length == 0 && (
-              <MasonryList
-                listContainerStyle={{
-                  marginTop: 20,
-                }}
-                columns={3}
-                images={masonryPosts.map((img) => ({ uri: img }))}
-              />
-            )}
-          </View>
+          <View></View>
           <View style={styles.serach_results}>
-            {searchResults.map((result) => (
+            {searchResults.map((result, index) => (
               <TouchableWithoutFeedback
                 onPress={() => {
+                  setSearchText("");
+                  setSearchResults([]);
                   navigation.navigate("ProfileScreen", { userId: result.id });
                 }}
+                key={index}
               >
                 <View style={styles.dropdown_result}>
                   <View style={styles.setting}>

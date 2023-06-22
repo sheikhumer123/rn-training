@@ -18,52 +18,59 @@ import { useNavigation } from "@react-navigation/native";
 import {
   getUserDB,
   createFollowFollowing,
-  updateFollowFollowingCurrentUser,
-  updateFollowFollowingUser,
-  updateButtonFollow,
+  notify,
+  removeFollowFollowing,
+  getUserPosts,
 } from "../database";
 
 const ProfileScreen = ({ route }) => {
-  const { currentUser, setCurrentuUser } = useContext(MainContext);
-
   const navigation = useNavigation();
   const { userId } = route.params;
-  const [profile, setProfileData] = useState([]);
-  const [buttonText, setButtonText] = useState(false);
+  const { currentUser, setCurrentUser } = useContext(MainContext);
+  const [profile, setProfileData] = useState({
+    followers: [],
+    following: [],
+  });
   const [discoverBox, setDiscoverBox] = useState(true);
   const [loading, setloading] = useState(false);
-  const [following] = useState({
-    id: userId,
-  });
-  const [follower] = useState({
-    id: currentUser.id,
-  });
+  const [postLength, setPostLength] = useState("");
 
   useEffect(() => {
-    const checkButtonSituation = async () => {
-      setloading(true);
-      const situation = await updateButtonFollow(userId, currentUser);
-      setButtonText(situation);
-      setloading(false);
-    };
     const fetchData = async () => {
       setloading(true);
       const data = await getUserDB(userId);
       setProfileData(data);
       setloading(false);
     };
+    getPostLength();
     fetchData();
-    checkButtonSituation();
   }, []);
 
+  const getPostLength = async () => {
+    const posts = await getUserPosts(currentUser.id);
+    setPostLength(posts.length);
+  };
+
   const Follow = async () => {
-    if (buttonText === false) {
-      setButtonText(!buttonText);
-      await createFollowFollowing(currentUser.id, userId);
+    if (currentUser.following.includes(userId)) {
+      setCurrentUser({
+        ...currentUser,
+        following: currentUser.following.filter((id) => id !== userId),
+      });
+      await removeFollowFollowing(currentUser.id, userId);
     } else {
-      setButtonText(!buttonText);
-      await updateFollowFollowingCurrentUser(following, currentUser);
-      await updateFollowFollowingUser(follower, userId);
+      setCurrentUser({
+        ...currentUser,
+        following: [...currentUser.following, userId],
+      });
+      await createFollowFollowing(currentUser.id, userId);
+      await notify(
+        userId,
+        currentUser.username,
+        currentUser.user_img,
+        app.notificationString.followingYou,
+        currentUser.id
+      );
     }
   };
 
@@ -108,15 +115,19 @@ const ProfileScreen = ({ route }) => {
                   }}
                 />
                 <View style={styles.section_1_text}>
-                  <Text style={app.styles.center_text}>1</Text>
+                  <Text style={app.styles.center_text}>{postLength}</Text>
                   <Text style={app.styles.center_text}>Posts</Text>
                 </View>
                 <View style={styles.section_1_text}>
-                  <Text style={app.styles.center_text}>29</Text>
+                  <Text style={app.styles.center_text}>
+                    {profile.followers.length}
+                  </Text>
                   <Text style={app.styles.center_text}>Followers</Text>
                 </View>
                 <View style={styles.section_1_text}>
-                  <Text style={app.styles.center_text}>15</Text>
+                  <Text style={app.styles.center_text}>
+                    {profile.following.length}
+                  </Text>
                   <Text style={app.styles.center_text}>Following</Text>
                 </View>
               </View>
@@ -141,7 +152,11 @@ const ProfileScreen = ({ route }) => {
                     color: "white",
                     fontWeight: "600",
                   }}
-                  title={buttonText ? "UnFollow" : "Follow"}
+                  title={
+                    currentUser.following.includes(userId)
+                      ? "Following"
+                      : "Follow"
+                  }
                 />
               </View>
             </View>

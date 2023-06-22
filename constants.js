@@ -11,4 +11,7 @@ export const app = {
       fontWeight: "bold",
     },
   },
+  notificationString: {
+    followingYou: "started following you",
+  },
 };

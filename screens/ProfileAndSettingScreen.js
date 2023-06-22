@@ -45,12 +45,8 @@ const ProfileAndSettingScreen = (props) => {
 
   useEffect(() => {
     getPostLength();
-    // setFollowingLength(currentUser.following.length);
-    // if (currentUser.hasOwnProperty("followers")) {
-    //   setFollowersLength(currentUser.followers.length);
-    // } else {
-    //   setFollowersLength("0");
-    // }
+    setFollowingLength(currentUser.following.length);
+    setFollowersLength(currentUser.followers.length);
   }, []);
 
   return (
@@ -90,15 +86,15 @@ const ProfileAndSettingScreen = (props) => {
               }}
             />
             <View style={styles.section_1_text}>
-              <Text style={app.styles.center_text}>0</Text>
+              <Text style={app.styles.center_text}>{postLength}</Text>
               <Text style={app.styles.center_text}>Posts</Text>
             </View>
             <View style={styles.section_1_text}>
-              <Text style={app.styles.center_text}>0</Text>
+              <Text style={app.styles.center_text}>{followersLength}</Text>
               <Text style={app.styles.center_text}>Followers</Text>
             </View>
             <View style={styles.section_1_text}>
-              <Text style={app.styles.center_text}>0</Text>
+              <Text style={app.styles.center_text}>{followingLength}</Text>
               <Text style={app.styles.center_text}>Following</Text>
             </View>
           </View>
