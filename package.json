@@ -41,7 +41,8 @@
     "react-native-webview": "11.23.1",
     "shortid": "^2.2.16",
     "uuid": "^9.0.0",
-    "uuidv4": "^6.2.13"
+    "uuidv4": "^6.2.13",
+    "expo-linear-gradient": "~12.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"
