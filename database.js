@@ -289,13 +289,13 @@ export const notify = async (
   notify_user_id,
   usertitle,
   img,
-  descriptionNotify,
+  description_notify,
   byUserID
 ) => {
   const docRef = await addDoc(collection(db, "notifications"), {
     by_user: usertitle,
     user_id: notify_user_id,
-    description: descriptionNotify,
+    description: description_notify,
     img: img,
     by_user_id: byUserID,
     time: Date(),

@@ -23,4 +23,8 @@ export const app = {
   deviceWidth: dim.width,
   deviceHeight: dim.height,
   topHeight: StatusBar.currentHeight,
+  FollowCloudFunction:
+    "https://us-central1-instagram-4b52d.cloudfunctions.net/follow",
+  UnFollowCloudFunction:
+    "https://us-central1-instagram-4b52d.cloudfunctions.net/unfollow",
 };
