@@ -5,7 +5,6 @@ import { getUserDB } from "../database";
 
 const MainContext = React.createContext();
 export const MainProvider = ({ children }) => {
-  const [reset, setReset] = useState("");
   const [appLoad, setAppLoad] = useState(true);
   const [currentUser, setCurrentUser] = useState({});
   useEffect(() => {
@@ -22,9 +21,7 @@ export const MainProvider = ({ children }) => {
   }, []);
 
   return (
-    <MainContext.Provider
-      value={{ currentUser, setCurrentUser, appLoad, reset, setReset }}
-    >
+    <MainContext.Provider value={{ currentUser, setCurrentUser, appLoad }}>
       {children}
     </MainContext.Provider>
   );

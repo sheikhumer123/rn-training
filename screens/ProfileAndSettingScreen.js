@@ -23,7 +23,7 @@ import SettingModal from "../components/SettingModal";
 import AccountSwitchModal from "../components/AccountSwicthModal";
 import CreateModal from "../components/CreateModal";
 
-const ProfileAndSettingScreen = (props) => {
+const ProfileAndSettingScreen = () => {
   const navigation = useNavigation();
   const [isModalVisible, setModalVisible] = useState(false);
   const [createModal, setCreateModal] = useState(false);
@@ -199,9 +199,8 @@ export default ProfileAndSettingScreen;
 
 const styles = StyleSheet.create({
   setting_area: {
-    paddingTop: 10,
-    paddingHorizontal: 10,
-    paddingTop: 50,
+    paddingHorizontal: 5,
+    paddingTop: app.topHeight + 6,
   },
   setting_option: {
     height: 50,

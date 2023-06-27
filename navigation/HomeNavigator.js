@@ -1,13 +1,10 @@
 import * as React from "react";
-
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-
 import Home from "../screens/Home";
-
 import Notification from "../components/Notification";
 import EditProfileScreen from "../screens/EditProfileScreen";
 import OpenCommentsScreen from "../screens/OpenCommentsScreen";
 import ProfileScreen from "../screens/ProfileScreen";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 const Stack = createNativeStackNavigator();
 

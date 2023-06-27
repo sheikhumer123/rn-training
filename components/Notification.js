@@ -67,26 +67,30 @@ const Notification = () => {
               <Text style={{ marginLeft: 5 }}>{noti.description}</Text>
             </View>
             <View>
-              <Button
-                onPress={() => follow(noti.by_user_id)}
-                title={
-                  currentUser.following.includes(noti.by_user_id)
-                    ? "Following"
-                    : "Follow"
-                }
-                containerStyle={{
-                  alignSelf: "center",
-                }}
-                titleStyle={{
-                  fontSize: 14,
-                  padding: 0,
-                  margin: 0,
-                }}
-                buttonStyle={{
-                  padding: 0,
-                  height: 28,
-                }}
-              />
+              {noti.description !== app.likeMessage.likeYou && (
+                <>
+                  <Button
+                    onPress={() => follow(noti.by_user_id)}
+                    title={
+                      currentUser.following.includes(noti.by_user_id)
+                        ? "Following"
+                        : "Follow"
+                    }
+                    containerStyle={{
+                      alignSelf: "center",
+                    }}
+                    titleStyle={{
+                      fontSize: 14,
+                      padding: 0,
+                      margin: 0,
+                    }}
+                    buttonStyle={{
+                      padding: 0,
+                      height: 28,
+                    }}
+                  />
+                </>
+              )}
             </View>
           </View>
         ))}
@@ -98,7 +102,7 @@ export default Notification;
 
 const styles = StyleSheet.create({
   notification_bar: {
-    paddingTop: 40,
+    paddingTop: app.topHeight + 6,
     paddingHorizontal: 10,
   },
   notification: {

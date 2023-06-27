@@ -16,6 +16,7 @@
     "@react-navigation/native-stack": "^6.9.8",
     "@rneui/base": "^4.0.0-rc.6",
     "@rneui/themed": "^4.0.0-rc.6",
+    "axios": "^1.4.0",
     "expo": "^47.0.14",
     "expo-image-picker": "~14.0.2",
     "expo-status-bar": "~1.4.4",

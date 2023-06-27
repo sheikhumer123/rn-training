@@ -10,11 +10,11 @@ import {
 
 import Feather from "react-native-vector-icons/Feather";
 import MainContext from "../MainContext/MainContext";
-
 import { getAllUsersForSearch } from "../database";
 import { useNavigation } from "@react-navigation/native";
 import { Avatar } from "@rneui/themed";
-import { MasonryListPosts } from "../database";
+import { masonryListPosts } from "../database";
+import { app } from "../constants";
 
 const SearchScreen = ({}) => {
   const { currentUser } = useContext(MainContext);
@@ -33,7 +33,7 @@ const SearchScreen = ({}) => {
   };
   useEffect(() => {
     const getPost = async () => {
-      const data = await MasonryListPosts();
+      const data = await masonryListPosts();
       const imgUrls = data.map((post) => post.imgUrl);
     };
     getPost();
@@ -51,7 +51,7 @@ const SearchScreen = ({}) => {
         <View
           style={{
             flex: 1,
-            paddingTop: 35,
+            paddingTop: app.topHeight + 9,
             paddingHorizontal: 10,
           }}
         >

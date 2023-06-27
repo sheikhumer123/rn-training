@@ -127,7 +127,6 @@ const styles = StyleSheet.create({
     display: "flex",
     alignItems: "center",
     borderColor: "#ccc",
-
     marginLeft: 5,
     borderWidth: 1,
     borderRadius: 5,
