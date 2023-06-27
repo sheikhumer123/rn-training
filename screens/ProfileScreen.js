@@ -54,7 +54,7 @@ const ProfileScreen = ({ route }) => {
 
   const follow = async () => {
     if (currentUser.following.includes(userId)) {
-      const cloudFollowFunction = app.UnFollowCloudFunction;
+      const cloudFollowFunction = app.cloudFunction + "unfollow";
       try {
         const response = await axios.post(cloudFollowFunction, {
           user_1: currentUser.id,
@@ -72,7 +72,7 @@ const ProfileScreen = ({ route }) => {
         ...currentUser,
         following: [...currentUser.following, userId],
       });
-      const cloudFollowFunction = app.FollowCloudFunction;
+      const cloudFollowFunction = app.cloudFunction + "follow";
       try {
         const response = await axios.post(cloudFollowFunction, {
           user_1: currentUser.id,
