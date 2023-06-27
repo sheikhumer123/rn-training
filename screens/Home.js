@@ -1,6 +1,11 @@
 import React from "react";
-import { StyleSheet, View, ScrollView, SafeAreaView } from "react-native";
-
+import {
+  StyleSheet,
+  View,
+  ScrollView,
+  SafeAreaView,
+  Dimensions,
+} from "react-native";
 import HomeTopNav from "../components/HomeTopNav";
 import Stories from "../components/Stories";
 import PostSection from "../components/PostSection";

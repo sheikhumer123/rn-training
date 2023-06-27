@@ -2,11 +2,12 @@ import { initializeApp } from "firebase/app";
 
 // Initialize Firebase
 const firebaseConfig = {
-  apiKey: "AIzaSyAOrJzrJjEf_rsv6GsVkyWTY71NfH6m5zg",
-  authDomain: "rn-training-rn.firebaseapp.com",
-  projectId: "rn-training-rn",
-  storageBucket: "rn-training-rn.appspot.com",
-  messagingSenderId: "1046189239483",
-  appId: "1:1046189239483:web:1514efbe409e34a6b24d9e",
+  apiKey: "AIzaSyDlsOzJrIMhMnnTHxQLKZLVf0CfVRD91g8",
+  authDomain: "instagram-4b52d.firebaseapp.com",
+  projectId: "instagram-4b52d",
+  storageBucket: "instagram-4b52d.appspot.com",
+  messagingSenderId: "769419566328",
+  appId: "1:769419566328:web:ad4bad952e45b8e4de6f0d",
+  measurementId: "G-5F6CR002TF",
 };
 initializeApp(firebaseConfig);

@@ -56,7 +56,7 @@ export const createUserDB = async (userDetails, uid) => {
 export const getUserDB = async (uid) => {
   const docRef = doc(db, "users", uid);
   const docSnap = await getDoc(docRef);
-    if (docSnap.exists()) {
+  if (docSnap.exists()) {
     const data = docSnap.data();
     return data;
   } else {
@@ -139,19 +139,19 @@ export const likeFunction = async ({ currentUser, like, post }) => {
     where("post_id", "==", post.post_id)
   );
   const querySnapshot = await getDocs(q);
-  const updatePromises = []; 
+  const updatePromises = [];
   for (const doc of querySnapshot.docs) {
-    const likes = doc.data().likes || []; /
+    const likes = doc.data().likes || [];
     const existingLikeIndex = likes.findIndex(
       (l) => l.user_id === currentUser.uid
-    ); 
+    );
     if (existingLikeIndex !== -1) {
-      likes.splice(existingLikeIndex, 1); 
+      likes.splice(existingLikeIndex, 1);
     } else {
-      likes.push(like); 
+      likes.push(like);
     }
     const updatePromise = updateDoc(doc.ref, { likes: likes });
-    updatePromises.push(updatePromise); 
+    updatePromises.push(updatePromise);
   }
 
   await Promise.all(updatePromises);
@@ -162,7 +162,7 @@ export const getLikesLength = async (postId) => {
   const docSnap = await getDoc(docRef);
   if (docSnap.exists()) {
     const post = docSnap.data();
-    const likesLength = post.likes ? post.likes.length : 0;
+    const likesLength = post.likes;
     return likesLength;
   } else {
   }
@@ -286,16 +286,16 @@ export const masonryListPosts = async () => {
 };
 
 export const notify = async (
-  user_1,
+  notify_user_id,
   usertitle,
   img,
-  descriptionnotify,
+  descriptionNotify,
   byUserID
 ) => {
   const docRef = await addDoc(collection(db, "notifications"), {
     by_user: usertitle,
-    user_id: user_1,
-    description: descriptionnotify,
+    user_id: notify_user_id,
+    description: descriptionNotify,
     img: img,
     by_user_id: byUserID,
     time: Date(),

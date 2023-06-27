@@ -15,6 +15,7 @@ import { Avatar } from "@rneui/themed";
 import { app } from "../constants";
 import { Button } from "react-native-elements";
 import { useNavigation } from "@react-navigation/native";
+import axios from "axios";
 import {
   getUserDB,
   createFollowFollowing,
@@ -53,17 +54,35 @@ const ProfileScreen = ({ route }) => {
 
   const follow = async () => {
     if (currentUser.following.includes(userId)) {
+      const cloudFollowFunction =
+        "https://us-central1-instagram-4b52d.cloudfunctions.net/unfollow";
+      try {
+        const response = await axios.post(cloudFollowFunction, {
+          user_1: currentUser.id,
+          user_2: userId,
+        });
+      } catch (error) {
+        console.log(error);
+      }
       setCurrentUser({
         ...currentUser,
         following: currentUser.following.filter((id) => id !== userId),
       });
-      await removeFollowFollowing(currentUser.id, userId);
     } else {
       setCurrentUser({
         ...currentUser,
         following: [...currentUser.following, userId],
       });
-      await createFollowFollowing(currentUser.id, userId);
+      const cloudFollowFunction =
+        "https://us-central1-instagram-4b52d.cloudfunctions.net/follow";
+      try {
+        const response = await axios.post(cloudFollowFunction, {
+          user_1: currentUser.id,
+          user_2: userId,
+        });
+      } catch (error) {
+        console.log(error);
+      }
       await notify(
         userId,
         currentUser.username,
@@ -139,7 +158,7 @@ const ProfileScreen = ({ route }) => {
             <View style={styles.section_3_container}>
               <View style={styles.profile_screen_buttons}>
                 <Button
-                  onPress={Follow}
+                  onPress={follow}
                   buttonStyle={{
                     backgroundColor: "dodgerblue",
                   }}

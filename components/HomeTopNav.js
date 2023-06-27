@@ -8,6 +8,7 @@ import {
 import { Icon } from "@rneui/base";
 import { useNavigation } from "@react-navigation/native";
 import Logo from "./Logo";
+import { app } from "../constants";
 
 const HomeTopNav = () => {
   const navigation = useNavigation();
@@ -43,7 +44,7 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     paddingHorizontal: 10,
-    paddingTop: Platform.OS == "ios" ? 10 : 55,
+    paddingTop: app.topHeight + 6,
     paddingBottom: 10,
     justifyContent: "space-between",
     width: "100%",

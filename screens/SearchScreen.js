@@ -10,11 +10,11 @@ import {
 
 import Feather from "react-native-vector-icons/Feather";
 import MainContext from "../MainContext/MainContext";
-
 import { getAllUsersForSearch } from "../database";
 import { useNavigation } from "@react-navigation/native";
 import { Avatar } from "@rneui/themed";
 import { masonryListPosts } from "../database";
+import { app } from "../constants";
 
 const SearchScreen = ({}) => {
   const { currentUser } = useContext(MainContext);
@@ -51,7 +51,7 @@ const SearchScreen = ({}) => {
         <View
           style={{
             flex: 1,
-            paddingTop: 35,
+            paddingTop: app.topHeight + 9,
             paddingHorizontal: 10,
           }}
         >

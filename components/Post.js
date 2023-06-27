@@ -6,6 +6,7 @@ import {
   Text,
   ImageBackground,
   TouchableWithoutFeedback,
+  ActivityIndicator,
 } from "react-native";
 import { Icon } from "@rneui/base";
 import CommentBox from "./CommentBox";
@@ -13,6 +14,8 @@ import moment from "moment";
 
 import MainContext from "../MainContext/MainContext";
 import { likeFunction, getLikesLength } from "../database";
+import { notify } from "../database";
+import { app } from "../constants";
 
 const Post = ({ post }) => {
   const commentInputRef = useRef(null);
@@ -22,24 +25,60 @@ const Post = ({ post }) => {
     .unix(uploadTime.seconds)
     .milliseconds(uploadTime.nanoseconds / 1000000);
   const formattedTime = moment(timestamp).startOf("day").fromNow();
-
   const { currentUser } = useContext(MainContext);
   const [like, setLike] = useState({
     user_id: currentUser.uid,
     liked_by: currentUser.username,
   });
-  const [likeLength, setLikeLength] = useState("");
+
+  const [postLikes, setPostLikes] = useState([]);
+  const [loading, setloading] = useState(false);
+  const [likeLength, setLikeLength] = useState({
+    count: 0,
+    updated: false,
+  });
 
   const likePost = async () => {
-    await likeFunction({ currentUser, like, post });
-    const likesLength = await getLikesLength(post.post_id);
-    setLikeLength(likesLength);
+    if (likeLength.updated) {
+      setLikeLength((like) => ({
+        ...like,
+        count: like.count + (like.updated ? -1 : 1),
+        updated: !like.updated,
+      }));
+      await likeFunction({ currentUser, like, post });
+    } else {
+      setLikeLength((like) => ({
+        ...like,
+        count: like.count + (like.updated ? -1 : 1),
+        updated: !like.updated,
+      }));
+      await likeFunction({ currentUser, like, post });
+      await notify(
+        post.id,
+        currentUser.username,
+        currentUser.user_img,
+        app.likeMessage.likeYou,
+        currentUser.id
+      );
+    }
   };
-
+  const checkThatPostLiked = (likes) => {
+    for (let i = 0; i < likes.length; i++) {
+      if (likes[i].liked_by === currentUser.username) return true;
+    }
+    return false;
+  };
   useEffect(() => {
     const fetchLikesLength = async () => {
-      const length = await getLikesLength(post.post_id);
-      setLikeLength(length);
+      setloading(true);
+      const data = await getLikesLength(post.post_id);
+      setPostLikes(data);
+      setLikeLength({
+        ...likeLength,
+        count: data.length,
+        updated: checkThatPostLiked(data),
+      });
+      setloading(false);
     };
     fetchLikesLength();
   }, []);
@@ -58,7 +97,7 @@ const Post = ({ post }) => {
               uri: post.post_user_img,
             }}
           />
-          <Text style={styles.post_user_name}>{post.username}</Text>
+          <Text style={styles.post_username}>{post.username}</Text>
         </View>
       </View>
       <View style={styles.post_data}>
@@ -94,9 +133,19 @@ const Post = ({ post }) => {
         <Icon name="download" type="feather" />
       </View>
       <View style={styles.like_comment_section}>
-        <Text style={{ marginTop: 5, fontSize: 14 }}>Like {likeLength}</Text>
+        {loading ? (
+          <ActivityIndicator
+            animating={loading}
+            style={{ alignSelf: "flex-start" }}
+          />
+        ) : (
+          <Text style={{ marginTop: 5, fontSize: 14 }}>
+            Like {likeLength.count}
+          </Text>
+        )}
+
         <View style={{ flex: 1, flexDirection: "row" }}>
-          <Text style={{ fontWeight: "bold" }}>{post.user_name}</Text>
+          <Text style={{ fontWeight: "bold" }}>{post.username}</Text>
           <Text style={{ fontWeight: "400", fontSize: 14, paddingLeft: 5 }}>
             {post.description}
           </Text>
@@ -117,7 +166,6 @@ const Post = ({ post }) => {
   );
 };
 export default Post;
-
 const styles = StyleSheet.create({
   post: {
     marginTop: 20,
@@ -132,7 +180,7 @@ const styles = StyleSheet.create({
 
     borderRadius: 50,
   },
-  post_user_name: {
+  post_username: {
     marginLeft: 5,
     fontWeight: "bold",
   },
