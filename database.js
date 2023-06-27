@@ -312,3 +312,17 @@ export const getUsernotify = async (id) => {
 
   return notifications;
 };
+
+export const addStory = async (
+  storyImg,
+  createDate,
+  expireDate,
+  storyUserID
+) => {
+  const docRef = await addDoc(collection(db, "stories"), {
+    storyImgUrl: storyImg,
+    createDate,
+    expireDate,
+    user_id: storyUserID,
+  });
+};

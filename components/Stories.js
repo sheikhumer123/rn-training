@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 
 import {
   StyleSheet,
@@ -11,11 +11,16 @@ import {
   Image,
   Keyboard,
   LayoutAnimation,
+  Text,
 } from "react-native";
 import { Avatar } from "@rneui/themed";
 import * as ImagePicker from "expo-image-picker";
 import { app } from "../constants";
 import { Icon } from "react-native-elements";
+import MainContext from "../MainContext/MainContext";
+import { Button } from "@rneui/base";
+import { addStory } from "../database";
+import { LinearGradient } from "expo-linear-gradient";
 
 const Stories = () => {
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
@@ -23,7 +28,9 @@ const Stories = () => {
   const [modalImage, setModalImage] = useState();
   const [isStoryUpdated, setIsStoryUpdated] = useState(false);
   const [keyboardHeight, setKeyboardHeight] = useState(0);
-  const [timerRunning, setTimerRunning] = useState(false);
+  const [modalFooterSwitch, setModalFooterSwitch] = useState(false);
+  const [loader, setLoader] = useState(false);
+  const { currentUser } = useContext(MainContext);
 
   const stories = [
     { dp: "https://randomuser.me/api/portraits/men/15.jpg" },
@@ -33,10 +40,10 @@ const Stories = () => {
     { dp: "https://randomuser.me/api/portraits/men/45.jpg" },
     { dp: "https://randomuser.me/api/portraits/men/33.jpg" },
   ];
-  const defaultStoryImage =
-    "https://placehold.co/600x400/000000/FFFFFF/png?text=stories";
-  const [storyImage, setStoryImage] = useState(defaultStoryImage);
+
+  const [storyImage, setStoryImage] = useState(currentUser.user_img);
   const pickImage = async () => {
+    console.log(isStoryUpdated);
     if (isStoryUpdated) {
       setStoryVisible(true);
     } else {
@@ -49,36 +56,32 @@ const Stories = () => {
         let uri = result.assets[0].uri;
         setStoryImage(uri);
         setModalImage(uri);
+        setStoryVisible(true);
         setIsStoryUpdated(true);
       }
     }
   };
-  const startTimer = () => {
-    setTimerRunning(true);
-    const timer = setInterval(() => {}, 1000);
-    return timer;
+
+  const storyUpload = async () => {
+    setLoader(true);
+    const currentUserID = currentUser.id;
+    const createDate = new Date();
+    const expireDate = new Date(createDate);
+    expireDate.setDate(expireDate.getDate() + 1);
+    await addStory(modalImage, createDate, expireDate, currentUserID);
+    setLoader(false);
+    setStoryVisible(false);
+    setModalFooterSwitch(true);
   };
-  const stopTimer = (timer) => {
-    setTimerRunning(false);
-    clearInterval(timer);
+  const closeModal = () => {
+    setStoryVisible(!storyVisible);
   };
+
   useEffect(() => {
-    let timer;
-    if (isStoryUpdated) {
-      timer = startTimer();
-      const timeLimit = 10000;
-      setTimeout(() => {
-        stopTimer(timer);
-        setStoryImage(defaultStoryImage);
-        setIsStoryUpdated(false);
-      }, timeLimit);
+    if (storyImage == currentUser.user_img) {
+      setModalFooterSwitch(false);
     }
-    return () => {
-      if (timer) {
-        stopTimer(timer);
-      }
-    };
-  }, [isStoryUpdated]);
+  }, []);
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
@@ -116,16 +119,46 @@ const Stories = () => {
   return (
     <View style={styles.stories}>
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-        <View style={styles.story}>
-          <Avatar
-            onPress={pickImage}
-            size={65}
-            rounded
-            source={{
-              uri: storyImage,
-            }}
-          />
-        </View>
+        <LinearGradient
+          style={{ borderRadius: 50, margin: 1 }}
+          colors={
+            modalFooterSwitch ? ["#8922B1", "#BE1271"] : ["white", "white"]
+          }
+          end={[1, 2]}
+          locations={[0, 0.5]}
+        >
+          <View style={styles.story}>
+            <Avatar
+              onPress={pickImage}
+              size={65}
+              rounded
+              source={{
+                uri: storyImage,
+              }}
+            />
+            {!modalFooterSwitch && (
+              <View
+                style={{
+                  height: 19,
+                  width: 19,
+                  position: "absolute",
+                  bottom: 0,
+                  right: 5,
+                  backgroundColor: "white",
+                  borderRadius: 50,
+                }}
+              >
+                <Icon
+                  type="entypo"
+                  name="circle-with-plus"
+                  size={19}
+                  color={"#00A36C"}
+                />
+              </View>
+            )}
+          </View>
+        </LinearGradient>
+
         {stories.map((story, index) => (
           <View style={styles.story} key={index}>
             <Avatar
@@ -148,13 +181,18 @@ const Stories = () => {
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <Pressable
-              style={styles.closeStory}
-              onPress={() => setStoryVisible(!storyVisible)}
-            >
+            <Pressable style={styles.closeStory} onPress={closeModal}>
               <Icon color={"white"} type="feather" name="x" size={35} />
             </Pressable>
             <View style={styles.modal_body}>
+              {loader && (
+                <View style={styles.story_loader}>
+                  <Text style={{ color: "white", fontSize: 14 }}>
+                    Posting...
+                  </Text>
+                </View>
+              )}
+
               <Image
                 style={{
                   height: app.deviceHeight - 120,
@@ -179,38 +217,52 @@ const Stories = () => {
                 position: "absolute",
                 bottom: keyboardHeight > 0 ? keyboardHeight / 2 + 48 : 60,
                 alignItems: "center",
-                justifyContent: "space-between",
+                justifyContent: isStoryUpdated ? "flex-end" : "space-between",
                 backgroundColor: keyboardHeight > 0 ? "black" : "transparent",
               }}
             >
-              <TextInput
-                style={{
-                  borderColor: isKeyboardVisible ? "transparent" : "white",
-                  height: 40,
-                  width: app.deviceWidth - 125,
-                  borderWidth: 1,
-                  borderRadius: 30,
-                  alignSelf: "flex-start",
-                  paddingLeft: 20,
-                  color: "white",
-                }}
-                placeholderTextColor="white"
-                placeholder="Send Comment"
-              />
-              <View style={styles.modal_footer_icons}>
-                <Icon
-                  iconStyle={styles.modal_icon}
-                  type="feather"
-                  name="heart"
-                  size={24}
-                />
-                <Icon
-                  iconStyle={styles.modal_icon}
-                  type="ionicon"
-                  name="md-paper-plane-outline"
-                  size={24}
-                />
-              </View>
+              {modalFooterSwitch ? (
+                <>
+                  <TextInput
+                    style={{
+                      borderColor: isKeyboardVisible ? "transparent" : "white",
+                      height: 40,
+                      width: app.deviceWidth - 125,
+                      borderWidth: 1,
+                      borderRadius: 30,
+                      alignSelf: "flex-start",
+                      paddingLeft: 20,
+                      color: "white",
+                    }}
+                    placeholderTextColor="white"
+                    placeholder="Send Comment"
+                  />
+                  <View style={styles.modal_footer_icons}>
+                    <Icon
+                      iconStyle={styles.modal_icon}
+                      type="feather"
+                      name="heart"
+                      size={24}
+                    />
+                    <Icon
+                      iconStyle={styles.modal_icon}
+                      type="ionicon"
+                      name="md-paper-plane-outline"
+                      size={24}
+                    />
+                  </View>
+                </>
+              ) : (
+                <>
+                  <Button
+                    onPress={storyUpload}
+                    title={"Post"}
+                    containerStyle={{
+                      width: 100,
+                    }}
+                  />
+                </>
+              )}
             </View>
           </View>
         </View>
@@ -227,8 +279,8 @@ const styles = StyleSheet.create({
   },
   story: {
     margin: 5,
-    backgroundColor: "red",
     borderRadius: 50,
+    position: "relative",
   },
   centeredView: {
     flex: 1,
@@ -256,7 +308,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 50,
     right: 20,
-    zIndex: 999,
+    zIndex: 2,
   },
   buttonOpen: {
     backgroundColor: "#F194FF",
@@ -311,6 +363,16 @@ const styles = StyleSheet.create({
     width: app.deviceHeight,
     borderRadius: 10,
   },
+  story_loader: {
+    height: 50,
+    width: 100,
+    position: "absolute",
+    top: app.deviceHeight / 2 - 50,
+    zIndex: 99,
+    backgroundColor: "rgba(0,0,0,0.8)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
 });
 
 // useEffect(() => {
@@ -328,6 +390,33 @@ const styles = StyleSheet.create({
 //         );
 //       }, timeDiff);
 //     }
+//   }
+//   return () => {
+//     if (timer) {
+//       stopTimer(timer);
+//     }
+//   };
+// }, [isStoryUpdated]);
+
+// const startTimer = () => {
+//   setTimerRunning(true);
+//   const timer = setInterval(() => {}, 1000);
+//   return timer;
+// };
+// const stopTimer = (timer) => {
+//   setTimerRunning(false);
+//   clearInterval(timer);
+// };
+// useEffect(() => {
+//   let timer;
+//   if (isStoryUpdated) {
+//     timer = startTimer();
+//     const timeLimit = 10000;
+//     setTimeout(() => {
+//       stopTimer(timer);
+//       setStoryImage(defaultStoryImage);
+//       setIsStoryUpdated(false);
+//     }, timeLimit);
 //   }
 //   return () => {
 //     if (timer) {
