@@ -24,5 +24,4 @@ export const app = {
   deviceHeight: dim.height,
   topHeight: StatusBar.currentHeight,
   cloudFunction: "https://us-central1-instagram-4b52d.cloudfunctions.net/",
-  cloudFunction: "https://us-central1-instagram-4b52d.cloudfunctions.net/",
 };
