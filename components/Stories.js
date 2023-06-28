@@ -1,10 +1,9 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 
 import {
   StyleSheet,
   View,
   ScrollView,
-  Alert,
   Modal,
   Pressable,
   TextInput,
@@ -13,38 +12,42 @@ import {
   LayoutAnimation,
   Text,
 } from "react-native";
+
 import { Avatar } from "@rneui/themed";
 import * as ImagePicker from "expo-image-picker";
 import { app } from "../constants";
-import { Icon } from "react-native-elements";
+import { Icon, LinearProgress } from "react-native-elements";
 import MainContext from "../MainContext/MainContext";
 import { Button } from "@rneui/base";
 import { addStory } from "../database";
 import { LinearGradient } from "expo-linear-gradient";
-
 const Stories = () => {
+  const timeLimit = 5000;
+
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
   const [storyVisible, setStoryVisible] = useState(false);
   const [modalImage, setModalImage] = useState();
   const [isStoryUpdated, setIsStoryUpdated] = useState(false);
   const [keyboardHeight, setKeyboardHeight] = useState(0);
   const [modalFooterSwitch, setModalFooterSwitch] = useState(false);
+  const [storyTimeoutProgress, setStoryTimeoutProgress] = useState(0);
   const [loader, setLoader] = useState(false);
+  const [storyTimeout, setStoryTimeout] = useState(false);
   const { currentUser } = useContext(MainContext);
 
-  const stories = [
-    { dp: "https://randomuser.me/api/portraits/men/15.jpg" },
-    { dp: "https://randomuser.me/api/portraits/men/20.jpg" },
-    { dp: "https://randomuser.me/api/portraits/men/22.jpg" },
-    { dp: "https://randomuser.me/api/portraits/men/26.jpg" },
-    { dp: "https://randomuser.me/api/portraits/men/45.jpg" },
-    { dp: "https://randomuser.me/api/portraits/men/33.jpg" },
-  ];
+  // const stories = [
+  //   { dp: "https://randomuser.me/api/portraits/men/15.jpg" },
+  //   { dp: "https://randomuser.me/api/portraits/men/20.jpg" },
+  //   { dp: "https://randomuser.me/api/portraits/men/22.jpg" },
+  //   { dp: "https://randomuser.me/api/portraits/men/26.jpg" },
+  //   { dp: "https://randomuser.me/api/portraits/men/45.jpg" },
+  //   { dp: "https://randomuser.me/api/portraits/men/33.jpg" },
+  // ];
 
   const [storyImage, setStoryImage] = useState(currentUser.user_img);
   const pickImage = async () => {
-    console.log(isStoryUpdated);
-    if (isStoryUpdated) {
+    setStoryTimeout(!storyTimeout);
+    if (modalFooterSwitch) {
       setStoryVisible(true);
     } else {
       let result = await ImagePicker.launchImageLibraryAsync({
@@ -61,7 +64,6 @@ const Stories = () => {
       }
     }
   };
-
   const storyUpload = async () => {
     setLoader(true);
     const currentUserID = currentUser.id;
@@ -74,14 +76,36 @@ const Stories = () => {
     setModalFooterSwitch(true);
   };
   const closeModal = () => {
-    setStoryVisible(!storyVisible);
+    setStoryVisible(false);
+  };
+
+  const startTimer = () => {
+    const timer = setInterval(() => {
+      setStoryTimeoutProgress((prevProgress) => prevProgress + timeLimit - 20);
+    }, 1000);
+    return timer;
+  };
+
+  const stopTimer = (timer) => {
+    clearInterval(timer);
   };
 
   useEffect(() => {
-    if (storyImage == currentUser.user_img) {
-      setModalFooterSwitch(false);
+    let timer;
+    if (modalFooterSwitch) {
+      timer = startTimer();
+      setTimeout(() => {
+        stopTimer(timer);
+        setStoryTimeoutProgress(0);
+        setStoryVisible(false);
+      }, timeLimit);
     }
-  }, []);
+    return () => {
+      if (timer) {
+        stopTimer(timer);
+      }
+    };
+  }, [storyTimeout]);
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
@@ -158,8 +182,7 @@ const Stories = () => {
             )}
           </View>
         </LinearGradient>
-
-        {stories.map((story, index) => (
+        {/* {stories.map((story, index) => (
           <View style={styles.story} key={index}>
             <Avatar
               size={65}
@@ -169,7 +192,7 @@ const Stories = () => {
               }}
             />
           </View>
-        ))}
+        ))} */}
       </ScrollView>
       <Modal
         animationType="fade"
@@ -184,6 +207,42 @@ const Stories = () => {
             <Pressable style={styles.closeStory} onPress={closeModal}>
               <Icon color={"white"} type="feather" name="x" size={35} />
             </Pressable>
+            {modalFooterSwitch ? (
+              <View
+                style={{
+                  width: app.deviceWidth,
+                  height: 3,
+                  position: "absolute",
+                  top: 40,
+                  zIndex: 4,
+                  backgroundColor: "#ccc",
+                }}
+              ></View>
+            ) : (
+              <View></View>
+            )}
+
+            {storyTimeoutProgress > 0 ? (
+              <View
+                style={{
+                  width: app.deviceWidth,
+                  height: 3,
+                  position: "absolute",
+                  top: 40,
+                  zIndex: 4,
+                }}
+              >
+                <LinearProgress
+                  variant="determinate"
+                  value={storyTimeoutProgress}
+                  trackColor="#BE1279"
+                  color="#ccc"
+                />
+              </View>
+            ) : (
+              <View></View>
+            )}
+
             <View style={styles.modal_body}>
               {loader && (
                 <View style={styles.story_loader}>
@@ -306,7 +365,7 @@ const styles = StyleSheet.create({
   },
   closeStory: {
     position: "absolute",
-    top: 50,
+    top: 55,
     right: 20,
     zIndex: 2,
   },
@@ -424,3 +483,9 @@ const styles = StyleSheet.create({
 //     }
 //   };
 // }, [isStoryUpdated]);
+
+// useEffect(() => {
+//   if (storyImage == currentUser.user_img) {
+//     setModalFooterSwitch(false);
+//   }
+// }, []);
