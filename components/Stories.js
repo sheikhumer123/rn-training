@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useContext, useRef } from "react";
-
+import React, { useState, useEffect, useContext } from "react";
 import {
   StyleSheet,
   View,
@@ -12,42 +11,48 @@ import {
   LayoutAnimation,
   Text,
 } from "react-native";
-
 import { Avatar } from "@rneui/themed";
-import * as ImagePicker from "expo-image-picker";
+import { Button } from "@rneui/base";
 import { app } from "../constants";
 import { Icon, LinearProgress } from "react-native-elements";
-import MainContext from "../MainContext/MainContext";
-import { Button } from "@rneui/base";
-import { addStory } from "../database";
+import {
+  addStory,
+  getStories,
+  storyPicUpload,
+  addStoryView,
+} from "../database";
 import { LinearGradient } from "expo-linear-gradient";
+import * as ImagePicker from "expo-image-picker";
+import MainContext from "../MainContext/MainContext";
 const Stories = () => {
+  const { currentUser } = useContext(MainContext);
   const timeLimit = 5000;
 
+  const [loader, setLoader] = useState(false);
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
   const [storyVisible, setStoryVisible] = useState(false);
   const [modalImage, setModalImage] = useState();
   const [isStoryUpdated, setIsStoryUpdated] = useState(false);
-  const [keyboardHeight, setKeyboardHeight] = useState(0);
   const [modalFooterSwitch, setModalFooterSwitch] = useState(false);
   const [storyTimeoutProgress, setStoryTimeoutProgress] = useState(0);
-  const [loader, setLoader] = useState(false);
   const [storyTimeout, setStoryTimeout] = useState(false);
-  const { currentUser } = useContext(MainContext);
-
-  // const stories = [
-  //   { dp: "https://randomuser.me/api/portraits/men/15.jpg" },
-  //   { dp: "https://randomuser.me/api/portraits/men/20.jpg" },
-  //   { dp: "https://randomuser.me/api/portraits/men/22.jpg" },
-  //   { dp: "https://randomuser.me/api/portraits/men/26.jpg" },
-  //   { dp: "https://randomuser.me/api/portraits/men/45.jpg" },
-  //   { dp: "https://randomuser.me/api/portraits/men/33.jpg" },
-  // ];
-
   const [storyImage, setStoryImage] = useState(currentUser.user_img);
+  const [stories, setStories] = useState([]);
+  const [storyBorder, setStoryBorder] = useState(false);
+  const [userStory, setUserStory] = useState([]);
+  const [viewed, setViewed] = useState(false);
+  const [textInputFocused, setTextInputFocused] = useState(false);
+  const [timer, setTimer] = useState(null);
+
   const pickImage = async () => {
-    setStoryTimeout(!storyTimeout);
+    if (storyBorder) {
+      setStoryTimeout(!storyTimeout);
+    }
     if (modalFooterSwitch) {
+      if (userStory) {
+        setModalImage(userStory[0].storyImgUrl);
+      }
       setStoryVisible(true);
     } else {
       let result = await ImagePicker.launchImageLibraryAsync({
@@ -64,16 +69,23 @@ const Stories = () => {
       }
     }
   };
+
+  const uploadStoryImage = async () => {
+    return await storyPicUpload(storyImage);
+  };
+
   const storyUpload = async () => {
     setLoader(true);
     const currentUserID = currentUser.id;
     const createDate = new Date();
     const expireDate = new Date(createDate);
     expireDate.setDate(expireDate.getDate() + 1);
-    await addStory(modalImage, createDate, expireDate, currentUserID);
+    const url = await uploadStoryImage();
+    await addStory(url, createDate, expireDate, currentUserID);
     setLoader(false);
     setStoryVisible(false);
     setModalFooterSwitch(true);
+    setStoryBorder(true);
   };
   const closeModal = () => {
     setStoryVisible(false);
@@ -90,46 +102,80 @@ const Stories = () => {
     clearInterval(timer);
   };
 
+  const handleFocus = () => {
+    setTextInputFocused(true);
+    if (timer) {
+      stopTimer(timer);
+    }
+  };
+
+  const handleBlur = () => {
+    setTextInputFocused(false);
+    if (!textInputFocused) {
+      const newTimer = startTimer();
+      setTimer(newTimer);
+    }
+  };
+
   useEffect(() => {
-    let timer;
-    if (modalFooterSwitch) {
-      timer = startTimer();
-      setTimeout(() => {
-        stopTimer(timer);
-        setStoryTimeoutProgress(0);
+    let timeoutId;
+    if (modalFooterSwitch && !textInputFocused) {
+      const newTimer = startTimer();
+      setTimer(newTimer);
+      timeoutId = setTimeout(() => {
+        stopTimer(newTimer);
         setStoryVisible(false);
-      }, timeLimit);
+        setStoryTimeoutProgress(0);
+      }, timeLimit - 20);
     }
     return () => {
       if (timer) {
         stopTimer(timer);
       }
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
     };
-  }, [storyTimeout]);
+  }, [storyTimeout, textInputFocused, timeLimit]);
 
   useEffect(() => {
-    const keyboardDidShowListener = Keyboard.addListener(
-      "keyboardDidShow",
-      (event) => {
-        const height = event.endCoordinates.height;
-        animateLayoutChanges(200);
-        setKeyboardHeight(height);
-        setKeyboardVisible(true);
-      }
-    );
-    const keyboardDidHideListener = Keyboard.addListener(
-      "keyboardDidHide",
-      () => {
-        setKeyboardHeight(0);
-        animateLayoutChanges(200);
-        setKeyboardVisible(false);
-      }
-    );
-    return () => {
-      keyboardDidHideListener.remove();
-      keyboardDidShowListener.remove();
-    };
+    setViewed(false);
+    allStories();
   }, []);
+
+  const allStories = async () => {
+    const data = await getStories();
+    const filteredData = data.filter((obj) => obj.user_id == currentUser.id);
+    if (filteredData.length > 0) {
+      setModalFooterSwitch(true);
+      setModalImage(filteredData[0].storyImgUrl);
+      setStoryImage(filteredData[0].storyImgUrl);
+    }
+    if (filteredData.length > 0) {
+      setStoryBorder(true);
+    } else {
+      setStoryBorder(false);
+    }
+    setUserStory(filteredData);
+    const otherUserStories = data.filter(
+      (obj) => obj.user_id !== currentUser.id
+    );
+    setStories(otherUserStories);
+    const test = data.filter((obj) => obj.user_id !== currentUser.id);
+  };
+
+  const openOtherStories = async (image, storyID) => {
+    setModalFooterSwitch(true);
+    if (image) {
+      setModalImage(image);
+      if (modalFooterSwitch) {
+        setStoryVisible(true);
+      }
+    }
+    await addStoryView(storyID, currentUser.id);
+    setViewed(true);
+    setStoryTimeout(!storyTimeout);
+  };
 
   const animateLayoutChanges = (duration) => {
     LayoutAnimation.configureNext({
@@ -145,9 +191,7 @@ const Stories = () => {
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         <LinearGradient
           style={{ borderRadius: 50, margin: 1 }}
-          colors={
-            modalFooterSwitch ? ["#8922B1", "#BE1271"] : ["white", "white"]
-          }
+          colors={storyBorder ? ["#8922B1", "#BE1271"] : ["white", "white"]}
           end={[1, 2]}
           locations={[0, 0.5]}
         >
@@ -160,7 +204,7 @@ const Stories = () => {
                 uri: storyImage,
               }}
             />
-            {!modalFooterSwitch && (
+            {!storyBorder && (
               <View
                 style={{
                   height: 19,
@@ -182,17 +226,32 @@ const Stories = () => {
             )}
           </View>
         </LinearGradient>
-        {/* {stories.map((story, index) => (
-          <View style={styles.story} key={index}>
-            <Avatar
-              size={65}
-              rounded
-              source={{
-                uri: story.dp,
-              }}
-            />
-          </View>
-        ))} */}
+        {stories.map((st, index) => {
+          const viewedby = st.viewedBy && st.viewedBy.includes(currentUser.id);
+          const gradientColors =
+            viewedby || viewed ? ["#ccc", "#ccc"] : ["#8922B1", "#BE1271"];
+
+          return (
+            <LinearGradient
+              key={index}
+              style={{ borderRadius: 50, margin: 1 }}
+              colors={gradientColors}
+              end={[1, 2]}
+              locations={[0, 0.5]}
+            >
+              <View style={styles.story} key={index}>
+                <Avatar
+                  onPress={() => openOtherStories(st.storyImgUrl, st.user_id)}
+                  size={65}
+                  rounded
+                  source={{
+                    uri: st.storyImgUrl,
+                  }}
+                />
+              </View>
+            </LinearGradient>
+          );
+        })}
       </ScrollView>
       <Modal
         animationType="fade"
@@ -283,6 +342,8 @@ const Stories = () => {
               {modalFooterSwitch ? (
                 <>
                   <TextInput
+                    onFocus={handleFocus}
+                    onBlur={handleBlur}
                     style={{
                       borderColor: isKeyboardVisible ? "transparent" : "white",
                       height: 40,
@@ -335,6 +396,7 @@ const styles = StyleSheet.create({
   stories: {
     display: "flex",
     flexDirection: "row",
+    paddingHorizontal: 5,
   },
   story: {
     margin: 5,
@@ -434,58 +496,24 @@ const styles = StyleSheet.create({
   },
 });
 
-// useEffect(() => {
-//   let timer;
-//   if (isStoryUpdated) {
-//     const currentDate = new Date();
-//     const targetDate = new Date(currentDate);
-//     targetDate.setDate(targetDate.getDate() + 1);
-//     if (currentDate < targetDate) {
-//       setTimeout(() => {
-//         stopTimer(timer);
-//         setIsStoryUpdated(false);
-//         setStoryImage(
-//           "https://placehold.co/600x400/000000/FFFFFF/png?text=stories"
-//         );
-//       }, timeDiff);
-//     }
+// const keyboardDidShowListener = Keyboard.addListener(
+//   "keyboardDidShow",
+//   (event) => {
+//     const height = event.endCoordinates.height;
+//     animateLayoutChanges(200);
+//     setKeyboardHeight(height);
+//     setKeyboardVisible(true);
 //   }
-//   return () => {
-//     if (timer) {
-//       stopTimer(timer);
-//     }
-//   };
-// }, [isStoryUpdated]);
-
-// const startTimer = () => {
-//   setTimerRunning(true);
-//   const timer = setInterval(() => {}, 1000);
-//   return timer;
+// );
+// const keyboardDidHideListener = Keyboard.addListener(
+//   "keyboardDidHide",
+//   () => {
+//     setKeyboardHeight(0);
+//     animateLayoutChanges(200);
+//     setKeyboardVisible(false);
+//   }
+// );
+// return () => {
+//   keyboardDidHideListener.remove();
+//   keyboardDidShowListener.remove();
 // };
-// const stopTimer = (timer) => {
-//   setTimerRunning(false);
-//   clearInterval(timer);
-// };
-// useEffect(() => {
-//   let timer;
-//   if (isStoryUpdated) {
-//     timer = startTimer();
-//     const timeLimit = 10000;
-//     setTimeout(() => {
-//       stopTimer(timer);
-//       setStoryImage(defaultStoryImage);
-//       setIsStoryUpdated(false);
-//     }, timeLimit);
-//   }
-//   return () => {
-//     if (timer) {
-//       stopTimer(timer);
-//     }
-//   };
-// }, [isStoryUpdated]);
-
-// useEffect(() => {
-//   if (storyImage == currentUser.user_img) {
-//     setModalFooterSwitch(false);
-//   }
-// }, []);

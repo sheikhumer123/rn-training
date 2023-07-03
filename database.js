@@ -313,6 +313,16 @@ export const getUsernotify = async (id) => {
   return notifications;
 };
 
+export const storyPicUpload = async (uri) => {
+  const name = uuidv4();
+  const filename = `${name}.jpg`;
+  const imageRef = ref(storage, `story_images/${filename}`);
+  const response = await fetch(uri);
+  const blob = await response.blob();
+  await uploadBytes(imageRef, blob);
+  return await getDownloadURL(imageRef);
+};
+
 export const addStory = async (
   storyImg,
   createDate,
@@ -325,4 +335,23 @@ export const addStory = async (
     expireDate,
     user_id: storyUserID,
   });
+};
+
+export const addStoryView = async (id, userID) => {
+  const q = query(collection(db, "stories"), where("user_id", "==", id));
+  const querySnapshot = await getDocs(q);
+  querySnapshot.forEach((doc) => {
+    const data = doc.data();
+    updateDoc(doc.ref, { viewedBy: [userID] });
+  });
+};
+
+export const getStories = async () => {
+  let stories = [];
+  const querySnapshot = await getDocs(collection(db, "stories"));
+  querySnapshot.forEach((doc) => {
+    const storiesData = doc.data();
+    stories.push(storiesData);
+  });
+  return stories;
 };
